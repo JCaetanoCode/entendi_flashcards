@@ -281,6 +281,19 @@
     text-align: center;
   }
   .card-face.back { transform: rotateY(180deg); }
+  
+  /* SELO DE STATUS NOVO */
+  .card-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 1.5rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .card-badge.show { opacity: 1; }
+
   .card-lang {
     font-size: 0.75rem;
     text-transform: uppercase;
@@ -484,10 +497,12 @@
   <div class="card-area">
     <div class="card" id="card">
       <div class="card-face front">
+        <div class="card-badge" id="badgeFront"></div>
         <div class="card-lang" id="langFront">Português</div>
         <div class="card-text" id="textFront">Carregando nuvem...</div>
       </div>
       <div class="card-face back">
+        <div class="card-badge" id="badgeBack"></div>
         <div class="card-lang" id="langBack">Inglês</div>
         <div class="card-text" id="textBack">—</div>
       </div>
@@ -563,7 +578,8 @@
   let currentIndex = 0;       
   let flipped = false;        
   let isReviewMode = false;   
-  let mistakes = [];          // Lista de erros na sessão
+  let mistakes = [];          
+  let sessionStatus = {};     // NOVO: Guarda o status (right/wrong) dos cards na sessão atual
   
   let syncTimeout = null;
   let isFirstLoad = true;
@@ -576,6 +592,8 @@
   const textBack = $("textBack");
   const langFront = $("langFront");
   const langBack = $("langBack");
+  const badgeFront = $("badgeFront"); // NOVO
+  const badgeBack = $("badgeBack");   // NOVO
 
   // --- TEMPO REAL (Firebase) ---
   function initRealtimeListener() {
@@ -660,6 +678,7 @@
         activeCategory = cat; 
         isReviewMode = false; 
         mistakes = [];        
+        sessionStatus = {}; // Limpa os selos ao mudar de categoria
         currentIndex = 0;
         buildDeck();
         saveToCloud(); 
@@ -679,6 +698,7 @@
             if (activeCategory === cat) activeCategory = "Geral";
             isReviewMode = false;
             mistakes = [];
+            sessionStatus = {};
             saveToCloud();
             buildDeck();
             updateUI();
@@ -739,6 +759,9 @@
       textBack.textContent = "—";
       cardEl.classList.remove("flipped");
       flipped = false;
+      // Limpa os selos caso o deck esteja vazio
+      badgeFront.className = "card-badge";
+      badgeBack.className = "card-badge";
       return;
     }
     
@@ -753,6 +776,28 @@
     cardEl.classList.remove("flipped");
     flipped = false;
     window.speechSynthesis.cancel();
+
+    // LÓGICA DO SELO: Verifica se este card já foi avaliado na sessão
+    const cardKey = c.en + "|" + c.pt + "|" + c.cat;
+    const status = sessionStatus[cardKey];
+    
+    // Reseta as classes dos selos
+    badgeFront.className = "card-badge";
+    badgeBack.className = "card-badge";
+    badgeFront.textContent = "";
+    badgeBack.textContent = "";
+
+    if (status === "right") {
+      badgeFront.textContent = "✅";
+      badgeBack.textContent = "✅";
+      badgeFront.classList.add("show");
+      badgeBack.classList.add("show");
+    } else if (status === "wrong") {
+      badgeFront.textContent = "❌";
+      badgeBack.textContent = "❌";
+      badgeFront.classList.add("show");
+      badgeBack.classList.add("show");
+    }
   }
 
   function renderList() {
@@ -831,22 +876,24 @@
     renderCard();
   }
 
-    // --- BOTÕES DE AÇÃO ---
+  // --- BOTÕES DE AÇÃO ---
   $("btnRight").onclick = () => {
     if (deck.length === 0) return;
     stats.right++;
     
-    // Se estiver no modo revisão e acertar, remove o card da lista de erros
+    // Marca o card como "right" na sessão
+    const currentCard = deck[currentIndex];
+    const cardKey = currentCard.en + "|" + currentCard.pt + "|" + currentCard.cat;
+    sessionStatus[cardKey] = "right";
+
+    // Se estiver no modo revisão e acertar, remove o card da lista de erros e zera 1 do placar
     if (isReviewMode) {
-      const currentCard = deck[currentIndex];
       mistakes = mistakes.filter(m => !(m.en === currentCard.en && m.pt === currentCard.pt && m.cat === currentCard.cat));
       
-      // NOVO: Subtrai 1 do placar de erros global, já que o card foi "recuperado"
       if (stats.wrong > 0) {
           stats.wrong--;
       }
 
-      // Se não houver mais erros, sai do modo revisão automaticamente
       if (mistakes.length === 0) {
         isReviewMode = false;
         toast("Você limpou todos os erros! 🎉");
@@ -864,7 +911,11 @@
     if (deck.length === 0) return;
     stats.wrong++;
     
+    // Marca o card como "wrong" na sessão
     const currentCard = deck[currentIndex];
+    const cardKey = currentCard.en + "|" + currentCard.pt + "|" + currentCard.cat;
+    sessionStatus[cardKey] = "wrong";
+
     const alreadyMistake = mistakes.find(m => m.en === currentCard.en && m.pt === currentCard.pt);
     if (!alreadyMistake) {
       mistakes.push(currentCard);
@@ -873,6 +924,7 @@
     saveToCloud();
     nextCard();
     updateStats();
+    updateUI(); // Adicionado updateUI para refletir o selo
   };
 
   $("btnPrev").onclick = () => { if (deck.length > 0) prevCard(); };
@@ -881,6 +933,7 @@
   $("btnReviewMode").onclick = () => {
     isReviewMode = !isReviewMode;
     currentIndex = 0;
+    sessionStatus = {}; // Limpa os selos ao entrar/sair do modo revisão
     if (isReviewMode) {
       if (mistakes.length === 0) {
         toast("Você ainda não errou nenhum card!");
@@ -921,6 +974,7 @@
     activeCategory = newCat; 
     isReviewMode = false;
     mistakes = [];
+    sessionStatus = {};
     saveToCloud();
     $("inputNewCat").value = "";
     buildDeck();
