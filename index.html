@@ -2,933 +2,1150 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flashcards PT ⇄ EN - Nuvem</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Audio & Text Exercise</title>
 <style>
   :root {
-    --bg-body: #f4f5f7;
-    --bg-card: #ffffff;
-    --bg-panel: #ffffff;
-    --text-main: #222222;
-    --text-muted: #666666;
-    --text-light: #999999;
-    --border-color: #dfe1e6;
-    --border-light: #f0f1f4;
-    --btn-bg: #e4e6ea;
-    --btn-active-bg: #ffffff;
-    --btn-active-text: #111111;
-    --btn-hover: #f4f5f7;
-    --btn-dark: #222222;
-    --btn-dark-hover: #000000;
-    --shadow: rgba(0,0,0,0.08);
-    --shadow-light: rgba(0,0,0,0.04);
-    --wrong-bg: #ffe5e5;
-    --wrong-text: #c0392b;
-    --wrong-hover: #ffd6d6;
-    --right-bg: #e3f9e5;
-    --right-text: #1e8449;
-    --right-hover: #d4f5d8;
-    --nav-bg: #e0e7ff;
-    --nav-text: #3730a3;
-    --nav-hover: #c7d2fe;
-    --highlight: #fff3cd;
-    --highlight-text: #856404;
+    --bg: #f4f6fb;
+    --card: #ffffff;
+    --primary: #3b6cf6;
+    --primary-dark: #2c53c4;
+    --text: #1e2233;
+    --muted: #6b7280;
+    --danger: #e5484d;
+    --ok: #16a34a;
+    --border: #e2e6ef;
+    --radius: 12px;
+    --shadow: 0 4px 16px rgba(30, 34, 51, 0.08);
   }
 
-  [data-theme="dark"] {
-    --bg-body: #121212;
-    --bg-card: #1e1e1e;
-    --bg-panel: #1e1e1e;
-    --text-main: #e0e0e0;
-    --text-muted: #a0a0a0;
-    --text-light: #777777;
-    --border-color: #333333;
-    --border-light: #2a2a2a;
-    --btn-bg: #2a2a2a;
-    --btn-active-bg: #444444;
-    --btn-active-text: #ffffff;
-    --btn-hover: #333333;
-    --btn-dark: #e0e0e0;
-    --btn-dark-hover: #ffffff;
-    --shadow: rgba(0,0,0,0.4);
-    --shadow-light: rgba(0,0,0,0.2);
-    --wrong-bg: #3a1c1c;
-    --wrong-text: #ff7b7b;
-    --wrong-hover: #4a2323;
-    --right-bg: #1c3a22;
-    --right-text: #7bff9b;
-    --right-hover: #234a2b;
-    --nav-bg: #1e1b4b;
-    --nav-text: #a5b4fc;
-    --nav-hover: #2e2a6b;
-    --highlight: #3d3215;
-    --highlight-text: #ffe08a;
+  body.dark-mode {
+    --bg: #12151e;
+    --card: #1c2130;
+    --primary: #5c85f6;
+    --primary-dark: #3b6cf6;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --border: #334155;
+    --shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   }
+  body.dark-mode input[type="text"], body.dark-mode select { background: #0f172a; color: #e2e8f0; }
+  body.dark-mode .sticky-tag-bar { background: rgba(28, 33, 48, 0.95); border-bottom: 1px solid #334155; }
+  body.dark-mode .tag-header { background: linear-gradient(90deg, #1e293b, #1c2130); }
+  body.dark-mode .tag-name { color: var(--primary); }
+  body.dark-mode ol.phrases li:hover { background: #1e293b; }
+  body.dark-mode ol.phrases li:active { background: #334155; }
+  body.dark-mode ol.phrases li.mastered { background: rgba(22, 163, 74, 0.1); }
+  body.dark-mode button.secondary { background: #334155; color: #e2e8f0; }
+  body.dark-mode button.secondary:hover { background: #475569; }
+  body.dark-mode button.danger:disabled { background: #7f1d1d; color: #fca5a5; }
+  body.dark-mode .speaking { background: #1e3a8a !important; }
+  body.dark-mode .dictation-input { background: #0f172a; color: #fff; border-color: #475569; }
+  body.dark-mode .dictation-feedback.correct { background: rgba(22, 163, 74, 0.2); color: #4ade80; border-color: #166534; }
+  body.dark-mode .dictation-feedback.incorrect { background: rgba(229, 72, 77, 0.2); color: #fca5a5; border-color: #991b1b; }
+  body.dark-mode .dictation-input.correct { background: rgba(22, 163, 74, 0.1); color: #4ade80; }
+  body.dark-mode .dictation-input.incorrect { background: rgba(229, 72, 77, 0.1); color: #fca5a5; }
+  body.dark-mode .translation-text { color: #94a3b8; }
+  body.dark-mode .play-count { background: #334155; color: #cbd5e1; }
+  body.dark-mode .reverse-portuguese-text { color: #94a3b8; }
+  body.dark-mode button.mastered-btn:hover { background: rgba(255,255,255,0.05); }
+  body.dark-mode button.mastered-btn.is-mastered { background: rgba(22, 163, 74, 0.2); }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
-  
+  * { box-sizing: border-box; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg-body);
-    color: var(--text-main);
-    min-height: 100vh;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 0 16px 60px;
+    transition: background 0.3s, color 0.3s;
   }
-  .app { width: 100%; max-width: 640px; }
-
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  header h1 { font-size: 1.3rem; font-weight: 600; }
+  .container { max-width: 760px; margin: 0 auto; }
   
-  .header-controls {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  header { text-align: center; padding: 20px 0 16px; }
+  header h1 { font-size: 1.4rem; margin: 0 0 6px; }
+  header p { color: var(--muted); margin: 0; font-size: 0.9rem; }
 
-  .theme-btn {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+  .sticky-tag-bar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(244, 246, 251, 0.95);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    padding: 12px 0; margin: 0 -16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: center; flex-direction: column; align-items: center; gap: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  .sticky-tag-bar select {
+    width: 90%; max-width: 400px;
+    padding: 12px 16px; border-radius: 10px;
+    font-weight: 700; font-size: 1.05rem;
+    border: 2px solid var(--primary);
+    background: var(--card); color: var(--text);
+    outline: none; box-shadow: 0 2px 8px rgba(59, 108, 246, 0.2);
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b6cf6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat; background-position: right 12px center; background-size: 20px;
     cursor: pointer;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 1px 3px var(--shadow-light);
   }
-  .theme-btn:hover { background: var(--btn-hover); }
-
-  .direction-toggle {
-    display: flex;
-    background: var(--btn-bg);
-    border-radius: 8px;
-    padding: 3px;
-  }
-  .direction-toggle button {
-    border: none;
-    background: transparent;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    cursor: pointer;
-    color: var(--text-muted);
-    font-weight: 500;
-  }
-  .direction-toggle button.active {
-    background: var(--btn-active-bg);
-    color: var(--btn-active-text);
-    box-shadow: 0 1px 2px var(--shadow-light);
-  }
-
-  .stats {
-    display: flex;
-    gap: 12px;
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    margin-bottom: 16px;
-  }
-  .stats span { background: var(--bg-card); padding: 6px 10px; border-radius: 6px; box-shadow: 0 1px 3px var(--shadow-light); }
-
-  .cat-accordion {
-    background: var(--bg-panel);
-    border-radius: 12px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 8px var(--shadow-light);
-    overflow: hidden;
-    border: 2px solid transparent;
-  }
-  .cat-accordion.active { border-color: var(--nav-text); }
-  .cat-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 600;
-    user-select: none;
-  }
-  .cat-header:hover { background: var(--btn-hover); }
-  .cat-current { color: var(--nav-text); font-weight: 700; font-size: 0.9rem; }
-  .cat-content {
-    display: none;
-    padding: 16px;
-    border-top: 1px solid var(--border-light);
-    background: var(--bg-card);
-  }
-  .cat-content.open { display: block; }
-  .cat-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-  .cat-pill {
-    padding: 6px 12px;
-    border-radius: 20px;
-    background: var(--btn-bg);
-    color: var(--text-main);
-    font-size: 0.85rem;
-    cursor: pointer;
-    border: 1px solid transparent;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .cat-pill.active {
-    background: var(--nav-bg);
-    color: var(--nav-text);
-    border-color: var(--nav-text);
-    font-weight: 600;
-  }
-  .cat-pill .del-cat { color: var(--wrong-text); font-weight: bold; font-size: 1rem; line-height: 1; }
-  .cat-pill .del-cat:hover { transform: scale(1.2); }
   
-  .add-cat-form { display: flex; gap: 8px; }
-  .add-cat-form input {
-    flex: 1;
-    padding: 8px 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 0.85rem;
-    background: var(--bg-body);
-    color: var(--text-main);
-    outline: none;
-  }
-  .add-cat-form button {
-    padding: 8px 16px;
-    background: var(--btn-dark);
-    color: var(--bg-card);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.85rem;
+  #filterSelect {
+    width: 90%; max-width: 400px; padding: 8px 12px; font-size: 0.9rem; 
+    border-color: var(--border); box-shadow: none; font-weight: 600;
+    background-image: none; appearance: auto; margin-top: 0;
   }
 
-  .card-area { perspective: 1200px; height: 260px; margin-bottom: 16px; }
   .card {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
-    transform-style: preserve-3d;
-    transition: transform 0.5s;
+    background: var(--card); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 16px; margin-bottom: 16px;
+    transition: background 0.3s;
   }
-  .card.flipped { transform: rotateY(180deg); }
-  .card-face {
-    position: absolute;
-    inset: 0;
-    backface-visibility: hidden;
-    background: var(--bg-card);
-    border-radius: 16px;
-    box-shadow: 0 4px 16px var(--shadow);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    text-align: center;
+  .field-label {
+    font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.4px; color: var(--muted);
+    margin-bottom: 6px; display: block;
   }
-  .card-face.back { transform: rotateY(180deg); }
-  .card-lang {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--text-light);
-    margin-bottom: 12px;
+  .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  input[type="text"], select {
+    flex: 1; min-width: 140px; padding: 12px;
+    border: 1px solid var(--border); border-radius: 10px;
+    font-size: 1rem; background: #fbfcff; color: var(--text);
+    outline: none; transition: border-color 0.15s, box-shadow 0.15s, background 0.3s;
   }
-  .card-text { font-size: 1.6rem; font-weight: 600; line-height: 1.3; }
+  input[type="text"]:focus, select:focus {
+    border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 108, 246, 0.15);
+  }
+  button {
+    border: none; border-radius: 10px; padding: 12px 18px;
+    font-size: 0.95rem; font-weight: 600; cursor: pointer;
+    background: var(--primary); color: #fff;
+    transition: background 0.15s, transform 0.05s, opacity 0.15s;
+    white-space: nowrap;
+  }
+  button:hover { background: var(--primary-dark); }
+  button:active { transform: scale(0.98); }
+  button.secondary { background: #e8eefc; color: var(--primary-dark); }
+  button.secondary:hover { background: #d9e3fb; }
+  button.danger { background: var(--danger); }
+  button.danger:hover { background: #c73b3f; }
+  button.danger:disabled { background: #fca5a5; cursor: not-allowed; opacity: 0.6; transform: none; }
+  button.small { padding: 8px 12px; font-size: 0.8rem; border-radius: 8px; }
+  button.ghost { background: transparent; color: var(--danger); padding: 4px 8px; font-size: 0.85rem; }
+  button.ghost:hover { background: rgba(229, 72, 77, 0.1); }
+  
+  button.translate-btn { background: transparent; color: var(--primary-dark); padding: 8px; font-size: 1rem; }
+  button.translate-btn:hover { background: rgba(59, 108, 246, 0.1); border-radius: 8px; }
 
-  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-  .actions button {
-    padding: 14px;
-    border: none;
-    border-radius: 12px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.1s;
+  /* Botão de Check (Dominado) */
+  button.mastered-btn { 
+    background: transparent; color: var(--muted); padding: 6px; font-size: 1.1rem;
+    border-radius: 8px; opacity: 0.4; transition: all 0.2s;
   }
-  .actions button:active { transform: scale(0.97); }
-  .btn-wrong { background: var(--wrong-bg); color: var(--wrong-text); }
-  .btn-right { background: var(--right-bg); color: var(--right-text); }
-  .btn-wrong:hover { background: var(--wrong-hover); }
-  .btn-right:hover { background: var(--right-hover); }
-
-  .nav-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
-  .nav-actions button {
-    padding: 12px;
-    border: none;
-    border-radius: 12px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    background: var(--nav-bg);
-    color: var(--nav-text);
-    transition: transform 0.1s;
-  }
-  .nav-actions button:hover { background: var(--nav-hover); }
-  .nav-actions button:active { transform: scale(0.97); }
-
-  .panel {
-    background: var(--bg-panel);
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 8px var(--shadow-light);
-  }
-  .panel h2 {
-    font-size: 0.95rem;
-    margin-bottom: 12px;
-    font-weight: 600;
-    color: var(--text-main);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .badge {
-    background: var(--highlight);
-    color: var(--highlight-text);
-    font-size: 0.75rem;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-weight: 700;
+  button.mastered-btn:hover { opacity: 0.8; background: rgba(0,0,0,0.05); }
+  button.mastered-btn.is-mastered { 
+    opacity: 1; color: var(--ok); 
+    background: rgba(22, 163, 74, 0.1);
   }
 
-  .add-form { display: flex; flex-direction: column; gap: 8px; }
-  .add-form input {
-    padding: 10px 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 0.95rem;
-    outline: none;
-    background: var(--bg-body);
-    color: var(--text-main);
+  .controls {
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: center;
+    background: var(--card); padding: 12px; border-radius: var(--radius);
+    box-shadow: var(--shadow); margin-bottom: 16px;
+    transition: background 0.3s;
   }
-  .add-form input:focus { border-color: var(--text-muted); }
-  .add-form button {
-    padding: 10px;
-    background: var(--btn-dark);
-    color: var(--bg-card);
-    border: none;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    cursor: pointer;
-    font-weight: 500;
-  }
-  .add-form button:hover { background: var(--btn-dark-hover); }
+  .control-group { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; }
+  .control-group label { color: var(--muted); font-weight: 600; }
+  .control-group select { padding: 6px 8px; min-width: auto; font-size: 0.85rem; }
+  input[type="range"] { width: 90px; accent-color: var(--primary); }
 
-  .io-row { display: flex; flex-wrap: wrap; gap: 8px; }
-  .io-row button, .io-row label {
-    flex: 1;
-    min-width: 120px;
-    padding: 9px;
-    border: 1px solid var(--border-color);
-    background: var(--bg-card);
-    color: var(--text-main);
-    border-radius: 8px;
-    font-size: 0.85rem;
-    cursor: pointer;
-    text-align: center;
-    font-weight: 500;
+  .tag-block {
+    background: var(--card); border-radius: var(--radius);
+    box-shadow: var(--shadow); margin-bottom: 20px; overflow: hidden;
+    animation: fadeIn 0.2s ease-in-out; transition: background 0.3s;
   }
-  .io-row button:hover, .io-row label:hover { background: var(--btn-hover); }
-  .io-row input[type="file"] { display: none; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-  .card-list { max-height: 240px; overflow-y: auto; }
-  .list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border-light);
-    font-size: 0.9rem;
-    gap: 8px;
+  .tag-header {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; padding: 12px 16px;
+    background: linear-gradient(90deg, #eef3ff, #f9fbff);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap; transition: background 0.3s;
   }
-  .list-item:last-child { border-bottom: none; }
-  .list-item .pair { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .list-item .pair b { color: var(--text-main); }
-  .list-item .pair span { color: var(--text-muted); }
-  .list-item button {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    padding: 4px 6px;
-    border-radius: 6px;
-    color: var(--text-muted);
+  .tag-name { font-weight: 700; font-size: 1.1rem; color: var(--primary-dark); }
+  .tag-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  
+  .loop-label {
+    display: flex; align-items: center; gap: 6px; font-size: 0.8rem;
+    color: var(--muted); cursor: pointer; user-select: none;
+    background: rgba(0,0,0,0.05); padding: 6px 10px; border-radius: 8px;
   }
-  .list-item button:hover { background: var(--btn-hover); }
+  body.dark-mode .loop-label { background: rgba(255,255,255,0.1); }
+  .loop-label input { accent-color: var(--primary); width: 16px; height: 16px; cursor: pointer; }
 
-  .toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--btn-dark);
-    color: var(--bg-card);
-    padding: 10px 18px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
-    z-index: 100;
+  ol.phrases { list-style: none; margin: 0; padding: 8px 12px 14px; counter-reset: phrase; }
+  ol.phrases li {
+    counter-increment: phrase;
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 12px 8px; border-radius: 10px;
+    cursor: pointer; transition: background 0.12s;
+    border-bottom: 1px dashed var(--border);
   }
-  .toast.show { opacity: 1; }
+  ol.phrases li:last-child { border-bottom: none; }
+  ol.phrases li:hover { background: #f5f8ff; }
+  ol.phrases li:active { background: #eaf0ff; }
+  
+  /* Estilo de frase dominada */
+  ol.phrases li.mastered { background: #f0fdf4; }
+  ol.phrases li.mastered .phrase-text { opacity: 0.7; }
 
-  @media (max-width: 480px) {
-    .card-text { font-size: 1.3rem; }
-    header h1 { font-size: 1.1rem; }
-    .io-row button, .io-row label { min-width: 100%; }
+  ol.phrases li::before {
+    content: "(" counter(phrase) ")";
+    color: var(--muted); font-weight: 600;
+    font-size: 0.8rem; min-width: 28px;
+    margin-top: 4px;
+  }
+  
+  .phrase-content { flex: 1; display: flex; flex-direction: column; gap: 4px; padding-top: 2px; }
+  .phrase-text { font-size: 1.05rem; transition: filter 0.2s, opacity 0.2s; line-height: 1.4; }
+  .phrase-text.editing { background: #fffbe6; outline: 2px solid var(--primary); border-radius: 6px; padding: 4px 6px; color: #1e2233; }
+  .speaker { font-size: 1.1rem; opacity: 0.5; margin-top: 2px; }
+  
+  .play-count {
+    font-size: 0.7rem; font-weight: 700;
+    background: #e8eefc; color: var(--primary-dark);
+    padding: 3px 6px; border-radius: 20px;
+    white-space: nowrap; min-width: 40px; text-align: center;
+    margin-top: 4px;
+  }
+  .play-count.zero { opacity: 0.4; }
+
+  .translation-text {
+    font-size: 0.9rem; color: var(--muted);
+    display: none; padding-left: 6px; font-style: italic;
+    border-left: 3px solid var(--primary); margin-top: 4px;
+  }
+  .translation-text.visible { display: block; }
+  .translation-text.loading { color: var(--primary); }
+  .translation-text.error { color: var(--danger); }
+
+  .dictation-area { display: none; width: 100%; gap: 6px; align-items: center; margin-top: 6px; }
+  .dictation-input { 
+    flex: 1; padding: 10px 12px; border-radius: 8px; border: 2px solid var(--border); outline: none; font-size: 1rem;
+  }
+  .dictation-input.correct { border-color: var(--ok); background: #f0fdf4; color: #166534; }
+  .dictation-input.incorrect { border-color: var(--danger); background: #fef2f2; color: #991b1b; text-decoration: line-through; }
+  .dictation-feedback { display: none; width: 100%; font-size: 0.85rem; margin-top: 4px; padding: 8px; border-radius: 8px; }
+  .dictation-feedback.correct { background: #dcfce7; color: #166534; display: block; border: 1px solid #bbf7d0;}
+  .dictation-feedback.incorrect { background: #fee2e2; color: #991b1b; display: block; border: 1px solid #fecaca;}
+
+  .empty { text-align: center; color: var(--muted); padding: 30px 16px; font-size: 0.95rem; }
+  .speaking { background: #e6efff !important; }
+  .hint { font-size: 0.8rem; color: var(--muted); margin-top: 8px; }
+
+  /* Estilos dos Modos de Estudo */
+  body.blind-mode ol.phrases li .original-english-text { opacity: 0; user-select: none; }
+  body.blind-mode ol.phrases li.revealed .original-english-text { opacity: 1; user-select: text; }
+  body.quiz-mode ol.phrases li .original-english-text { filter: blur(6px); user-select: none; }
+  body.quiz-mode ol.phrases li.revealed .original-english-text { filter: none; user-select: text; }
+  
+  body.dictation-mode ol.phrases li .original-english-text { display: none; }
+  body.dictation-mode .dictation-area { display: flex; flex-wrap: wrap; }
+
+  /* 🔄 MODO REVERSO */
+  body.reverse-mode .trans-btn-icon,
+  body.reverse-mode .translation-text:not(.reverse-visible) { display: none !important; }
+  body.reverse-mode .original-english-text { display: none; }
+  body.reverse-mode li.revealed .original-english-text { display: block; margin-top: 4px; }
+  body.reverse-mode .reverse-portuguese-text { 
+    display: block; color: var(--primary-dark); font-size: 1.05rem;
+    min-height: 1.4em; font-weight: 600;
+  }
+  body.dark-mode.reverse-mode .reverse-portuguese-text { color: var(--primary); }
+  body.reverse-mode li.revealed .reverse-portuguese-text { 
+    font-size: 0.85rem; font-weight: normal; color: var(--muted); margin-bottom: 2px; 
   }
 </style>
 </head>
 <body>
-<div class="app">
+<div class="container">
   <header>
-    <h1>Flashcards <span style="font-size:0.7rem;color:var(--text-muted);font-weight:normal;">(Nuvem)</span></h1>
-    <div class="header-controls">
-      <div class="direction-toggle">
-        <button id="dirPTEN" class="active">PT → EN</button>
-        <button id="dirENPT">EN → PT</button>
-      </div>
-      <button class="theme-btn" id="themeBtn" title="Alternar Tema">🌙</button>
-    </div>
+    <h1>Audio and text comprehension exercise</h1>
+    <p>Click on the text to hear the pronunciation</p>
   </header>
 
-  <div class="stats">
-    <span>✅ <b id="statRight">0</b></span>
-    <span>❌ <b id="statWrong">0</b></span>
-    <span>📚 <b id="statTotal">0</b> cards</span>
+  <div class="sticky-tag-bar">
+    <select id="tagSelect"></select>
+    <select id="filterSelect">
+      <option value="all">👁️ Mostrar Todas as Frases</option>
+      <option value="not-mastered">📚 Apenas Não Dominadas</option>
+      <option value="mastered">✅ Apenas Dominadas</option>
+    </select>
   </div>
 
-  <div class="cat-accordion" id="catAccordion">
-    <div class="cat-header" id="catHeader">
-      <span>📂 Categoria Ativa: <span class="cat-current" id="catCurrent">Geral</span></span>
-      <span id="catArrow" style="font-size: 0.8rem;">▼</span>
+  <div class="controls">
+    <div class="control-group">
+      <label for="accentSelect">Sotaque</label>
+      <select id="accentSelect">
+        <option value="en-US">🇺🇸 US</option>
+        <option value="en-GB">🇬🇧 UK</option>
+      </select>
     </div>
-    <div class="cat-content" id="catContent">
-      <div class="cat-list" id="catList"></div>
-      <div class="add-cat-form">
-        <input type="text" id="inputNewCat" placeholder="Nova categoria...">
-        <button id="btnAddCat">Criar</button>
+    <div class="control-group">
+      <label for="speedRange">Velocidade</label>
+      <input type="range" id="speedRange" min="0.5" max="1.5" step="0.05" value="1">
+      <span id="speedValue" style="min-width:30px;text-align:right;">1.0x</span>
+    </div>
+    <div class="control-group">
+      <label for="repeatSelect">Repet.</label>
+      <select id="repeatSelect">
+        <option value="1">1x</option>
+        <option value="2">2x</option>
+        <option value="3">3x</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label for="pauseSelect">Pausa</label>
+      <select id="pauseSelect">
+        <option value="0">0s</option>
+        <option value="0.3">0.3s</option>
+        <option value="0.5">0.5s</option>
+        <option value="1">1s</option>
+        <option value="1.5">1.5s</option>
+        <option value="2">2s</option>
+        <option value="3">3s</option>
+        <option value="4">4s</option>
+        <option value="5">5s</option>
+        <option value="6">6s</option>
+        <option value="7">7s</option>
+      </select>
+    </div>
+    
+    <div class="control-group" style="width: 100%; justify-content: space-between; margin-top: 6px;">
+      <div style="display:flex; gap:6px; flex-wrap: wrap;">
+        <button id="quizToggle" class="secondary small">🔀 Quiz</button>
+        <button id="blindToggle" class="secondary small">🙈 Ocultar</button>
+        <button id="dictationToggle" class="secondary small">✍️ Ditado</button>
+        <button id="reverseToggle" class="secondary small" style="border: 1px solid var(--primary-dark);">🔄 Reverso</button>
       </div>
+      <button id="themeToggle" class="secondary small" title="Alternar Tema">🌙</button>
     </div>
   </div>
 
-  <div class="card-area">
-    <div class="card" id="card">
-      <div class="card-face front">
-        <div class="card-lang" id="langFront">Português</div>
-        <div class="card-text" id="textFront">Carregando nuvem...</div>
-      </div>
-      <div class="card-face back">
-        <div class="card-lang" id="langBack">Inglês</div>
-        <div class="card-text" id="textBack">—</div>
-      </div>
+  <div class="card">
+    <label class="field-label">Backup e Arquivos (.txt)</label>
+    <div class="row" style="margin-bottom:10px;">
+      <select id="txtTagSelect"></select>
+    </div>
+    <div class="row">
+      <button id="importTxtBtn" class="secondary small">📄 Carregar .txt</button>
+      <button id="exportTxtBtn" class="secondary small">📄 Exportar .txt</button>
+      <button id="exportBtn" class="secondary small">📤 JSON</button>
+      <button id="importBtn" class="secondary small">📥 JSON</button>
+      <input type="file" id="importTxtFile" accept=".txt" style="display:none">
+      <input type="file" id="importFile" accept="application/json" style="display:none">
     </div>
   </div>
 
-  <div class="actions">
-    <button class="btn-wrong" id="btnWrong">❌ Errei</button>
-    <button class="btn-right" id="btnRight">✅ Acertei</button>
-  </div>
-
-  <div class="nav-actions">
-    <button id="btnPrev">⬅ Recuar</button>
-    <button id="btnNext">Avançar ➡</button>
-  </div>
-
-  <div class="panel">
-    <h2>➕ Adicionar card <span class="badge" id="badgeAdd">em: Geral</span></h2>
-    <div class="add-form">
-      <input type="text" id="inputEN" placeholder="Inglês (ex: Good morning)">
-      <input type="text" id="inputPT" placeholder="Português (ex: Bom dia)">
-      <button id="btnAdd">Adicionar</button>
+  <div class="card">
+    <label class="field-label" for="tagInput">Adicione uma Tag</label>
+    <div class="row">
+      <input type="text" id="tagInput" placeholder="ex: trabalho, lazer...">
+      <button id="addTagBtn">Adicionar Tag</button>
     </div>
   </div>
 
-  <div class="panel">
-    <h2>📁 Importar / Exportar <span class="badge" id="badgeImport">Importa para: Geral</span></h2>
-    <div class="io-row">
-      <button id="btnExportTxt">⬇ Exportar TXT</button>
-      <label>⬆ Importar TXT<input type="file" id="fileTxt" accept=".txt"></label>
-      <button id="btnExportJson">⬇ Exportar JSON</button>
-      <label>⬆ Importar JSON<input type="file" id="fileJson" accept=".json"></label>
+  <div class="card">
+    <label class="field-label" for="phraseInput">Adicione um Texto</label>
+    <div class="row">
+      <input type="text" id="phraseInput" placeholder="Inglês | Tradução (opcional)">
+      <button id="addPhraseBtn">Adicionar Texto</button>
     </div>
+    <div class="hint">Use o caractere <strong>|</strong> para separar o inglês da tradução.<br>Ex: <em>How's the weather | Como está o tempo</em></div>
   </div>
 
-  <div class="panel">
-    <h2>📋 Meus cards (<span id="listCount">0</span>)</h2>
-    <div class="card-list" id="cardList"></div>
-  </div>
+  <div id="emptyState" class="empty" style="display:none;">Nenhuma tag ainda. Crie uma acima para começar. ✨</div>
+
+  <div id="tagsContainer"></div>
 </div>
 
-<div class="toast" id="toast"></div>
-
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
-  import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+  // ⚠️ SUBSTITUA AQUI PELAS SUAS CONFIGURAÇÕES DO FIREBASE ⚠️
   const firebaseConfig = {
-    apiKey: "AIzaSyCeOVz5jRue8Y1Io7hAndWd-iwTlvaS9eI",
-    authDomain: "entendi-flashcards.firebaseapp.com",
-    projectId: "entendi-flashcards",
-    storageBucket: "entendi-flashcards.firebasestorage.app",
-    messagingSenderId: "181208616106",
-    appId: "1:181208616106:web:dbbbb7689af03e761f94d3",
-    measurementId: "G-ZFP29T103F"
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_PROJETO.firebaseapp.com",
+    databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
+    projectId: "SEU_PROJETO",
+    storageBucket: "SEU_PROJETO.appspot.com",
+    messagingSenderId: "SEU_SENDER_ID",
+    appId: "SEU_APP_ID"
   };
 
   const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  const db = getDatabase(app);
   
-  // Referência única do documento no Firestore
-  const docRef = doc(db, "flashcards", "data");
+  // Disponibiliza globalmente para o script principal
+  window.firebaseDB = { db, ref, set, onValue };
+</script>
 
-  let cards = [];
-  let categories = ["Geral"]; 
-  let activeCategory = "Geral"; 
-  let stats = { right: 0, wrong: 0 };
-  let direction = "pt-en"; 
-  let deck = [];         
-  let currentIndex = 0;
-  let flipped = false;
-  let syncTimeout = null;
-  let isFirstLoad = true; // Evita re-salvar dados recém-baixados
+<script>
+      const STORAGE_KEY = "audioTextExercise.v1";
+  const SETTINGS_KEY = "audioTextExercise.settings.v1";
 
-  const THEME_KEY = "flashcards_theme";
+  let data = loadData();
+  let settings = loadSettings();
+  let activeTagId = data.length ? data[0].id : null;
+  let currentFilter = "all";
+  
+  let quizMode = false;
+  let blindMode = false;
+  let dictationMode = false;
+  let reverseMode = false;
+  let loopMode = false;
 
-  const $ = (id) => document.getElementById(id);
-  const cardEl = $("card");
-  const textFront = $("textFront");
-  const textBack = $("textBack");
-  const langFront = $("langFront");
-  const langBack = $("langBack");
+  let queueToken = 0;
+  let isPlayingAll = false;
 
-  // --- TEMPO REAL (onSnapshot) ---
-  function initRealtimeListener() {
-    onSnapshot(docRef, (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        
-        // Atualiza as variáveis locais com o que veio da nuvem
-        cards = data.cards || [];
-        categories = data.categories || ["Geral"];
-        stats = data.stats || { right: 0, wrong: 0 };
-        
-        if (data.activeCategory && categories.includes(data.activeCategory)) {
-            activeCategory = data.activeCategory;
-        }
+  const $ = id => document.getElementById(id);
+  const tagInput = $("tagInput"), phraseInput = $("phraseInput");
+  const tagSelect = $("tagSelect"), filterSelect = $("filterSelect"), tagsContainer = $("tagsContainer");
+  const txtTagSelect = $("txtTagSelect");
+  const emptyState = $("emptyState");
+  const accentSelect = $("accentSelect");
+  const speedRange = $("speedRange"), speedValue = $("speedValue");
+  const repeatSelect = $("repeatSelect");
+  const pauseSelect = $("pauseSelect");
+  const quizToggle = $("quizToggle"), blindToggle = $("blindToggle"), dictationToggle = $("dictationToggle"), reverseToggle = $("reverseToggle"), themeToggle = $("themeToggle");
+  const exportBtn = $("exportBtn"), importBtn = $("importBtn"), importFile = $("importFile");
+  const importTxtBtn = $("importTxtBtn"), exportTxtBtn = $("exportTxtBtn"), importTxtFile = $("importTxtFile");
 
-        if (!categories.includes("Geral")) categories.unshift("Geral");
-        cards.forEach(c => { if (!c.cat || !categories.includes(c.cat)) c.cat = "Geral"; });
-        if (!categories.includes(activeCategory)) activeCategory = "Geral";
-        
-        updateUI();
-      } else {
-        // Se o documento não existe (primeira vez), cria ele
-        saveToCloud();
-      }
-      isFirstLoad = false;
-    }, (error) => {
-      console.error("Erro no tempo real:", error);
-      toast("Erro de conexão com o banco.");
-    });
+  if (settings.theme === "dark") {
+    document.body.classList.add("dark-mode");
+    themeToggle.textContent = "☀️";
   }
 
-  function saveToCloud() {
-    if (isFirstLoad) return; // Impede que o app salve por cima do banco logo que abre
+  $("addTagBtn").addEventListener("click", addTag);
+  $("addPhraseBtn").addEventListener("click", addPhrase);
+  tagInput.addEventListener("keydown", e => { if (e.key === "Enter") addTag(); });
+  phraseInput.addEventListener("keydown", e => { if (e.key === "Enter") addPhrase(); });
+  
+  tagSelect.addEventListener("change", () => { stopAudio(); activeTagId = tagSelect.value; render(); });
+  filterSelect.addEventListener("change", (e) => { currentFilter = e.target.value; render(); });
 
-    if (syncTimeout) clearTimeout(syncTimeout);
-    syncTimeout = setTimeout(async () => {
-      try {
-        await setDoc(docRef, {
-          cards: cards,
-          categories: categories,
-          stats: stats,
-          activeCategory: activeCategory
-        }, { merge: true }); // Merge evita apagar dados que vieram no meio do processo
-      } catch (e) {
-        console.error("Erro ao salvar", e);
-        toast("Erro ao salvar na nuvem.");
-      }
-    }, 800); // Espera 800ms de silêncio antes de enviar (Debounce)
-  }
+  accentSelect.addEventListener("change", () => { settings.accent = accentSelect.value; saveSettings(); });
+  speedRange.addEventListener("input", () => { settings.rate = parseFloat(speedRange.value); speedValue.textContent = settings.rate.toFixed(1) + "x"; saveSettings(); });
+  repeatSelect.addEventListener("change", () => { settings.repeat = parseInt(repeatSelect.value, 10); saveSettings(); });
+  pauseSelect.addEventListener("change", () => { settings.pause = parseFloat(pauseSelect.value); saveSettings(); });
 
-  function toast(msg) {
-    const t = $("toast");
-    t.textContent = msg;
-    t.classList.add("show");
-    setTimeout(() => t.classList.remove("show"), 2000);
-  }
-
-  function buildDeck() {
-    deck = cards.filter(c => c.cat === activeCategory);
-    if (currentIndex >= deck.length) currentIndex = 0;
-    if (deck.length === 0) currentIndex = 0;
-  }
-
-  function renderCategories() {
-    const list = $("catList");
-    list.innerHTML = "";
+  function toggleMode(mode) {
+    quizMode = (mode === 'quiz');
+    blindMode = (mode === 'blind');
+    dictationMode = (mode === 'dictation');
+    reverseMode = (mode === 'reverse');
     
-    categories.forEach(cat => {
-      const pill = document.createElement("div");
-      pill.className = "cat-pill" + (activeCategory === cat ? " active" : "");
-      
-      const span = document.createElement("span");
-      span.textContent = cat;
-      span.style.flex = "1";
-      span.onclick = () => { activeCategory = cat; saveToCloud(); updateUI(); };
-      pill.appendChild(span);
-
-      if (cat !== "Geral") {
-        const del = document.createElement("span");
-        del.className = "del-cat";
-        del.textContent = "×";
-        del.onclick = (e) => {
-          e.stopPropagation();
-          if (confirm(`Excluir a categoria "${cat}"?\n\nATENÇÃO: Todas as frases dentro dela também serão apagadas!`)) {
-            categories = categories.filter(c => c !== cat);
-            cards = cards.filter(c => c.cat !== cat); 
-            if (activeCategory === cat) activeCategory = "Geral";
-            saveToCloud();
-            updateUI();
-            toast(`Categoria "${cat}" excluída.`);
-          }
-        };
-        pill.appendChild(del);
-      }
-      list.appendChild(pill);
-    });
-  }
-
-  function updateUI() {
-    $("catCurrent").textContent = activeCategory;
-    $("badgeAdd").textContent = `em: ${activeCategory}`;
-    $("badgeImport").textContent = `Importa para: ${activeCategory}`;
+    updateModes();
     
-    if (activeCategory !== "Geral") {
-      $("catAccordion").classList.add("active");
-    } else {
-      $("catAccordion").classList.remove("active");
+    if (dictationMode && data.length > 0) {
+      const tag = data.find(t => t.id === activeTagId);
+      if (tag && tag.phrases.length > 0) {
+        speak(tag.phrases[0].text, null, false, tag.phrases[0].id); 
+      }
     }
+  }
+
+  quizToggle.addEventListener("click", () => toggleMode(quizMode ? 'none' : 'quiz'));
+  blindToggle.addEventListener("click", () => toggleMode(blindMode ? 'none' : 'blind'));
+  dictationToggle.addEventListener("click", () => toggleMode(dictationMode ? 'none' : 'dictation'));
+  reverseToggle.addEventListener("click", () => toggleMode(reverseMode ? 'none' : 'reverse'));
+
+  themeToggle.addEventListener("click", () => {
+    const isDark = document.body.classList.toggle("dark-mode");
+    themeToggle.textContent = isDark ? "☀️" : "🌙";
+    settings.theme = isDark ? "dark" : "light";
+    saveSettings();
+  });
+
+  function updateModes() {
+    document.body.classList.toggle("quiz-mode", quizMode);
+    document.body.classList.toggle("blind-mode", blindMode);
+    document.body.classList.toggle("dictation-mode", dictationMode);
+    document.body.classList.toggle("reverse-mode", reverseMode);
     
-    buildDeck();
-    renderCategories();
-    updateStats();
-    renderCard();
-    renderList();
+    quizToggle.textContent = quizMode ? "👁 Sair do Quiz" : "🔀 Quiz";
+    quizToggle.className = quizMode ? "small" : "secondary small";
+    
+    blindToggle.textContent = blindMode ? "👁 Revelar" : "🙈 Ocultar";
+    blindToggle.className = blindMode ? "small" : "secondary small";
+    
+    dictationToggle.textContent = dictationMode ? "✍️ Sair do Ditado" : "✍️ Ditado";
+    dictationToggle.className = dictationMode ? "small" : "secondary small";
+
+    reverseToggle.textContent = reverseMode ? "🔄 Sair do Reverso" : "🔄 Reverso";
+    reverseToggle.className = reverseMode ? "small" : "secondary small";
+    
+    render();
   }
 
-  function updateStats() {
-    $("statRight").textContent = stats.right;
-    $("statWrong").textContent = stats.wrong;
-    $("statTotal").textContent = cards.length;
-    $("listCount").textContent = deck.length;
+  function stopAudio() {
+    queueToken++;
+    isPlayingAll = false;
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    document.querySelectorAll(".speaking").forEach(el => el.classList.remove("speaking"));
+    const stopBtn = $("stopBtnLocal");
+    if (stopBtn) stopBtn.disabled = true;
   }
 
-  function renderCard() {
-    if (deck.length === 0) {
-      langFront.textContent = direction === "pt-en" ? "Português" : "Inglês";
-      langBack.textContent = direction === "pt-en" ? "Inglês" : "Português";
-      textFront.textContent = `Nenhum card em "${activeCategory}".`;
-      textBack.textContent = "—";
-      cardEl.classList.remove("flipped");
-      flipped = false;
+  function enableStopBtn() {
+    const stopBtn = $("stopBtnLocal");
+    if (stopBtn) stopBtn.disabled = false;
+  }
+
+  function incrementPlayCount(tagId, phraseId) {
+    if (!tagId || !phraseId) return;
+    const tag = data.find(t => t.id === tagId);
+    if (!tag) return;
+    const phrase = tag.phrases.find(p => p.id === phraseId);
+    if (!phrase) return;
+    phrase.playCount = (phrase.playCount || 0) + 1;
+    saveData();
+    const li = tagsContainer.querySelector(`li[data-phrase-id="${phraseId}"]`);
+    if (li) {
+      const countEl = li.querySelector('.play-count');
+      if (countEl) {
+        countEl.textContent = `👂 ${phrase.playCount}x`;
+        countEl.classList.remove('zero');
+      }
+    }
+  }
+
+  function toggleMastered(tagId, phraseId) {
+    const tag = data.find(t => t.id === tagId);
+    if (!tag) return;
+    const phrase = tag.phrases.find(p => p.id === phraseId);
+    if (!phrase) return;
+    
+    phrase.mastered = !phrase.mastered;
+    saveData();
+    
+    if (currentFilter !== 'all') {
+      render();
+    } else {
+      const li = tagsContainer.querySelector(`li[data-phrase-id="${phraseId}"]`);
+      if (li) {
+        if (phrase.mastered) {
+          li.classList.add('mastered');
+          li.querySelector('.mastered-btn').classList.add('is-mastered');
+        } else {
+          li.classList.remove('mastered');
+          li.querySelector('.mastered-btn').classList.remove('is-mastered');
+        }
+      }
+    }
+  }
+
+  async function translateText(text) {
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|pt-BR`;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Falha na rede");
+      const json = await response.json();
+      if (json.responseData && json.responseData.translatedText) return json.responseData.translatedText;
+      throw new Error("Formato inválido");
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
+  async function handleTranslatePhrase(phraseId, textObj, translationEl, btnEl) {
+    if (translationEl.classList.contains("visible") && !translationEl.classList.contains("loading")) {
+      translationEl.classList.remove("visible");
       return;
     }
-    
-    const c = deck[currentIndex];
-    const frontText = direction === "pt-en" ? c.pt : c.en;
-    const backText = direction === "pt-en" ? c.en : c.pt;
-    langFront.textContent = direction === "pt-en" ? "Português" : "Inglês";
-    langBack.textContent = direction === "pt-en" ? "Inglês" : "Português";
-    textFront.textContent = frontText;
-    textBack.textContent = backText;
-    
-    cardEl.classList.remove("flipped");
-    flipped = false;
-    window.speechSynthesis.cancel();
-  }
 
-  function renderList() {
-    const list = $("cardList");
-    list.innerHTML = "";
-    
-    if (deck.length === 0) {
-      list.innerHTML = '<div style="color:var(--text-light);font-size:0.85rem;padding:8px 0;">Nenhum card nesta categoria.</div>';
+    if (textObj.translation) {
+      translationEl.textContent = textObj.translation;
+      translationEl.className = "translation-text visible";
       return;
     }
 
-    deck.forEach((c) => {
-      // Encontra o índice real no array global de cards
-      const realIndex = cards.findIndex(card => card.en === c.en && card.pt === c.pt && card.cat === c.cat);
+    translationEl.textContent = "Traduzindo...";
+    translationEl.className = "translation-text visible loading";
+    btnEl.disabled = true;
+    const result = await translateText(textObj.english);
+    btnEl.disabled = false;
+    if (result) {
+      translationEl.textContent = result;
+      translationEl.className = "translation-text visible";
+    } else {
+      translationEl.textContent = "Erro ao traduzir.";
+      translationEl.className = "translation-text visible error";
+    }
+  }
+
+  async function translateWholeTag(tag, btnEl) {
+    const originalText = btnEl.textContent;
+    btnEl.textContent = "Traduzindo...";
+    btnEl.disabled = true;
+    let count = 0, errors = 0;
+    for (let i = 0; i < tag.phrases.length; i++) {
+      const p = tag.phrases[i];
+      const li = tagsContainer.querySelector(`li[data-phrase-id="${p.id}"]`);
+      const transEl = li ? li.querySelector('.translation-text') : null;
       
-      const div = document.createElement("div");
-      div.className = "list-item";
-      
-      const pair = document.createElement("div");
-      pair.className = "pair";
-      pair.innerHTML = `<b>${escapeHtml(c.en)}</b> <span>| ${escapeHtml(c.pt)}</span>`;
-      
-      const del = document.createElement("button");
-      del.textContent = "🗑";
-      del.onclick = () => {
-        if(realIndex > -1) {
-            cards.splice(realIndex, 1);
-            saveToCloud(); 
-            buildDeck();
-            updateUI();
-            toast("Card excluído");
+      if (transEl && transEl.classList.contains('visible') && !transEl.classList.contains('error')) continue;
+
+      if (p.translation) {
+        if (transEl) {
+          transEl.textContent = p.translation;
+          transEl.className = "translation-text visible";
         }
-      };
-      
-      div.appendChild(pair);
-      div.appendChild(del);
-      list.appendChild(div);
-    });
-  }
+        count++;
+        continue;
+      }
 
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, (m) => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-    }[m]));
-  }
-
-  function speak(text, lang) {
-    if (!("speechSynthesis" in window)) return;
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = lang === "en" ? "en-US" : "pt-BR";
-    u.rate = 0.95;
-    window.speechSynthesis.speak(u);
-  }
-
-  cardEl.addEventListener("click", (e) => {
-    if (deck.length === 0) return;
-    flipped = !flipped;
-    cardEl.classList.toggle("flipped", flipped);
-    if (flipped) {
-      const c = deck[currentIndex];
-      speak(c.en, "en"); 
-    } else {
-      window.speechSynthesis.cancel();
+      const result = await translateText(p.text);
+      if (result) {
+        count++;
+        if (transEl) {
+          transEl.textContent = result;
+          transEl.className = "translation-text visible";
+        }
+      } else { errors++; }
+      await new Promise(r => setTimeout(r, 800));
     }
-  });
-
-  function nextCard() {
-    if (deck.length === 0) return;
-    currentIndex = (currentIndex + 1) % deck.length;
-    renderCard();
+    btnEl.textContent = originalText;
+    btnEl.disabled = false;
+    if (errors > 0) alert(`Tradução: ${count} sucesso, ${errors} falhas.`);
+    else alert(`Todas as ${count} frases traduzidas!`);
   }
-  function prevCard() {
-    if (deck.length === 0) return;
-    currentIndex = (currentIndex - 1 + deck.length) % deck.length;
-    renderCard();
-  }
-
-  $("btnRight").onclick = () => {
-    if (deck.length === 0) return;
-    stats.right++;
-    saveToCloud();
-    nextCard();
-    updateStats();
-  };
-  $("btnWrong").onclick = () => {
-    if (deck.length === 0) return;
-    stats.wrong++;
-    saveToCloud();
-    nextCard();
-    updateStats();
-  };
-  $("btnPrev").onclick = () => { if (deck.length > 0) prevCard(); };
-  $("btnNext").onclick = () => { if (deck.length > 0) nextCard(); };
-
-  $("catHeader").onclick = () => {
-    const content = $("catContent");
-    const arrow = $("catArrow");
-    content.classList.toggle("open");
-    arrow.textContent = content.classList.contains("open") ? "▲" : "▼";
-  };
-
-  $("btnAddCat").onclick = () => {
-    const newCat = $("inputNewCat").value.trim();
-    if (!newCat) return;
-    if (categories.includes(newCat)) { toast("Categoria já existe"); return; }
-    categories.push(newCat);
-    activeCategory = newCat; 
-    saveToCloud();
-    $("inputNewCat").value = "";
-    updateUI(); 
-    toast(`Categoria "${newCat}" criada e ativada`);
-  };
-  $("inputNewCat").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") $("btnAddCat").click();
-  });
-
-  $("dirPTEN").onclick = () => {
-    direction = "pt-en";
-    $("dirPTEN").classList.add("active");
-    $("dirENPT").classList.remove("active");
-    renderCard();
-  };
-  $("dirENPT").onclick = () => {
-    direction = "en-pt";
-    $("dirENPT").classList.add("active");
-    $("dirPTEN").classList.remove("active");
-    renderCard();
-  };
-
-  $("themeBtn").onclick = () => {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const newTheme = isDark ? 'light' : 'dark';
-    if (newTheme === 'dark') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      $("themeBtn").textContent = '☀️';
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-      $("themeBtn").textContent = '🌙';
-    }
-    localStorage.setItem(THEME_KEY, newTheme);
-  };
-
-  $("btnAdd").onclick = () => {
-    const en = $("inputEN").value.trim();
-    const pt = $("inputPT").value.trim();
-    if (!en || !pt) { toast("Preencha os dois campos"); return; }
-    cards.push({ en, pt, cat: activeCategory });
-    saveToCloud();
-    $("inputEN").value = "";
-    $("inputPT").value = "";
-    $("inputEN").focus();
-    buildDeck();
-    updateUI();
-    toast(`Card adicionado em "${activeCategory}"`);
-  };
-  ["inputEN", "inputPT"].forEach((id) => {
-    $(id).addEventListener("keydown", (e) => {
-      if (e.key === "Enter") $("btnAdd").click();
-    });
-  });
-
-  function download(filename, content, mime) {
-    const blob = new Blob([content], { type: mime || "text/plain;charset=utf-8" });
+    // ====== BACKUP E TXT ======
+  exportBtn.addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  $("btnExportTxt").onclick = () => {
-    if (cards.length === 0) { toast("Nada para exportar"); return; }
-    const lines = cards.map((c) => `(${c.en} | ${c.pt} | ${c.cat})`).join("\n");
-    download("flashcards.txt", lines);
-    toast("TXT exportado com sucesso");
-  };
-
-  $("btnExportJson").onclick = () => {
-    const data = {
-      app: "flashcards",
-      version: 2,
-      exportedAt: new Date().toISOString(),
-      cards: cards,
-      categories: categories,
-      stats: stats,
-      direction: direction
-    };
-    download("flashcards.json", JSON.stringify(data, null, 2), "application/json");
-    toast("JSON exportado com sucesso");
-  };
-
-  function processImport(importedCards) {
-    if (importedCards.length === 0) { toast("Nenhuma frase válida encontrada"); return; }
-    importedCards.forEach(c => {
-      cards.push({ en: c.en, pt: c.pt, cat: activeCategory });
-    });
-    saveToCloud();
-    buildDeck();
-    updateUI();
-    toast(`${importedCards.length} frase(s) importada(s) para "${activeCategory}"`);
-  }
-
-  $("fileTxt").addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const text = reader.result;
-      const parsed = [];
-      const lines = text.split(/\r?\n/);
-      
-      for (let line of lines) {
-        line = line.trim();
-        if (!line) continue;
-        line = line.replace(/^\((.*)\)$/, "$1").trim();
-        const parts = line.split("|");
-        if (parts.length >= 2) {
-          const en = parts[0].trim();
-          const pt = parts[1].trim();
-          if (en && pt) parsed.push({ en, pt });
-        }
-      }
-      processImport(parsed);
-    };
-    reader.readAsText(file);
-    e.target.value = "";
+    a.href = url; a.download = "audio-text-exercise-" + new Date().toISOString().slice(0,10) + ".json";
+    a.click(); URL.revokeObjectURL(url);
   });
 
-  $("fileJson").addEventListener("change", (e) => {
-    const file = e.target.files[0];
+  importBtn.addEventListener("click", () => importFile.click());
+  
+  importFile.addEventListener("change", () => {
+    const file = importFile.files[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const data = JSON.parse(reader.result);
-        let importedCards = [];
-        if (Array.isArray(data)) importedCards = data;
-        else if (data && Array.isArray(data.cards)) importedCards = data.cards;
-
-        importedCards = importedCards
-          .filter(c => c && (c.en || c.pt))
-          .map(c => ({ 
-            en: String(c.en || ""), 
-            pt: String(c.pt || "")
-          }))
-          .filter(c => c.en && c.pt);
-
-        processImport(importedCards);
-      } catch (err) {
-        toast("Arquivo JSON inválido");
-      }
+        const parsed = JSON.parse(reader.result);
+        if (!Array.isArray(parsed)) throw new Error("Formato inválido");
+        if (!confirm("Importar substituirá todos os dados atuais. Continuar?")) return;
+        data = parsed.map(t => ({
+          id: t.id || uid(), name: String(t.name || "sem nome"),
+          phrases: Array.isArray(t.phrases) ? t.phrases.map(p => ({ 
+            id: p.id || uid(), 
+            text: String(p.text || ""), 
+            translation: String(p.translation || ""),
+            playCount: Number(p.playCount) || 0,
+            mastered: Boolean(p.mastered)
+          })) : []
+        }));
+        activeTagId = data.length ? data[0].id : null;
+        saveData(); render();
+      } catch (err) { alert("Erro ao importar: " + err.message); } 
+      finally { importFile.value = ""; }
     };
     reader.readAsText(file);
-    e.target.value = "";
   });
 
-  // --- CARREGAR TEMA E INICIAR ---
-  const savedTheme = localStorage.getItem(THEME_KEY);
-  if (savedTheme) {
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    $("themeBtn").textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+  importTxtBtn.addEventListener("click", () => {
+    if (!data.length) { alert("Crie uma tag primeiro!"); return; }
+    importTxtFile.click();
+  });
+
+  importTxtFile.addEventListener("change", () => {
+    const file = importTxtFile.files[0];
+    if (!file) return;
+    const targetTag = data.find(t => t.id === txtTagSelect.value);
+    if (!targetTag) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const lines = reader.result.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+        if (lines.length === 0) { alert("Arquivo vazio."); return; }
+        lines.forEach(line => {
+          const parts = line.split("|").map(s => s.trim());
+          const eng = parts[0];
+          const pt = parts[1] || "";
+          targetTag.phrases.push({ id: uid(), text: eng, translation: pt, playCount: 0, mastered: false });
+        });
+        saveData(); render();
+        alert(`Sucesso! ${lines.length} frases adicionadas.`);
+      } catch (err) { alert("Erro: " + err.message); } 
+      finally { importTxtFile.value = ""; }
+    };
+    reader.readAsText(file, "UTF-8");
+  });
+
+  exportTxtBtn.addEventListener("click", () => {
+    const targetTag = data.find(t => t.id === txtTagSelect.value);
+    if (!targetTag || targetTag.phrases.length === 0) { alert("Tag vazia."); return; }
+    const content = targetTag.phrases.map(p => {
+      return p.translation ? `${p.text} | ${p.translation}` : p.text;
+    }).join("\n");
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `frases_${targetTag.name.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.txt`;
+    a.click(); URL.revokeObjectURL(url);
+  });
+
+  function uid() { return Math.random().toString(36).slice(2, 10); }
+  
+  function loadData() { 
+    try { 
+      const raw = localStorage.getItem(STORAGE_KEY); 
+      const parsed = raw ? JSON.parse(raw) : []; 
+      return Array.isArray(parsed) ? parsed : []; 
+    } catch { return []; } 
   }
 
-  // Inicia a conexão em tempo real
-  initRealtimeListener();
+  // ====== SALVAMENTO NA NUVEM (FIREBASE) ======
+  function saveData() { 
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); 
+    
+    if (window.firebaseDB && window.firebaseDB.db) {
+      const { db, ref, set } = window.firebaseDB;
+      try {
+        set(ref(db, 'appData'), data);
+      } catch (e) {
+        console.warn("Erro ao sincronizar com a nuvem:", e);
+      }
+    }
+  }
 
+  function loadSettings() { 
+    const defaults = { accent: "en-US", rate: 1, repeat: 1, pause: 0.5, theme: "light" }; 
+    try { const raw = localStorage.getItem(SETTINGS_KEY); return raw ? { ...defaults, ...JSON.parse(raw) } : defaults; } 
+    catch { return defaults; } 
+  }
+  
+  function saveSettings() { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
+
+  function addTag() {
+    const name = tagInput.value.trim();
+    if (!name) return;
+    const tag = { id: uid(), name, phrases: [] };
+    data.push(tag); activeTagId = tag.id; tagInput.value = "";
+    saveData(); render();
+  }
+
+  function addPhrase() {
+    if (!activeTagId) { alert("Crie uma tag primeiro!"); return; }
+    const rawInput = phraseInput.value.trim();
+    if (!rawInput) return;
+
+    const parts = rawInput.split("|").map(s => s.trim());
+    const eng = parts[0];
+    const pt = parts[1] || "";
+
+    const tag = data.find(t => t.id === activeTagId);
+    tag.phrases.push({ id: uid(), text: eng, translation: pt, playCount: 0, mastered: false });
+    phraseInput.value = ""; saveData(); render();
+  }
+
+  function removeTag(tagId) {
+    if (!confirm("Remover esta tag e todas as suas frases?")) return;
+    stopAudio();
+    data = data.filter(t => t.id !== tagId);
+    if (activeTagId === tagId) activeTagId = data.length ? data[0].id : null;
+    saveData(); render();
+  }
+
+  function removePhrase(tagId, phraseId) {
+    const tag = data.find(t => t.id === tagId);
+    if (!tag) return;
+    tag.phrases = tag.phrases.filter(p => p.id !== phraseId);
+    saveData(); render();
+  }
+
+  function editPhrase(tagId, phraseId, spanEl) {
+    const tag = data.find(t => t.id === tagId);
+    if (!tag) return;
+    const phrase = tag.phrases.find(p => p.id === phraseId);
+    if (!phrase) return;
+    
+    const current = phrase.translation ? `${phrase.text} | ${phrase.translation}` : phrase.text;
+    const input = document.createElement("input");
+    input.type = "text"; input.value = current; input.style.width = "100%";
+    
+    spanEl.replaceWith(input);
+    input.focus(); input.setSelectionRange(current.length, current.length);
+    
+    const commit = () => { 
+      const val = input.value.trim(); 
+      if (val) {
+        const parts = val.split("|").map(s => s.trim());
+        phrase.text = parts[0];
+        phrase.translation = parts[1] || "";
+      }
+      saveData(); render(); 
+    };
+    const cancel = () => render();
+
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter") { e.preventDefault(); commit(); }
+      else if (e.key === "Escape") { e.preventDefault(); cancel(); }
+    });
+    input.addEventListener("blur", commit);
+  }
+
+  function speakOnce(text) {
+    return new Promise(resolve => {
+      if (!("speechSynthesis" in window)) { resolve(); return; }
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = settings.accent; utter.rate = settings.rate; utter.pitch = 1;
+      const voices = window.speechSynthesis.getVoices();
+      const exact = voices.find(v => v.lang === settings.accent);
+      const fallback = voices.find(v => v.lang.startsWith(settings.accent.slice(0,2)));
+      if (exact || fallback) utter.voice = exact || fallback;
+      utter.onend = resolve; utter.onerror = resolve;
+      window.speechSynthesis.speak(utter);
+    });
+  }
+
+  function waitPause(seconds, token) {
+    return new Promise(resolve => {
+      if (!seconds || seconds <= 0) { resolve(); return; }
+      const start = Date.now(); const target = seconds * 1000;
+      const tick = () => { if (token !== queueToken) { resolve(); return; } if (Date.now() - start >= target) { resolve(); return; } setTimeout(tick, 50); };
+      tick();
+    });
+  }
+
+  async function speak(text, liEl, forceSingle = false, tagId = null, phraseId = null) {
+    if (!("speechSynthesis" in window)) { alert("Seu navegador não suporta síntese de voz."); return; }
+    window.speechSynthesis.cancel();
+    isPlayingAll = false;
+    const myToken = ++queueToken;
+    const times = forceSingle ? 1 : settings.repeat;
+
+    enableStopBtn();
+    if (liEl) liEl.classList.add("speaking");
+    
+    for (let i = 0; i < times; i++) {
+      if (myToken !== queueToken) break;
+      await speakOnce(text);
+      if (tagId && phraseId) incrementPlayCount(tagId, phraseId);
+      if (i < times - 1) await waitPause(settings.pause, myToken);
+    }
+    
+    if (liEl) liEl.classList.remove("speaking");
+    if (myToken === queueToken) { const stopBtn = $("stopBtnLocal"); if (stopBtn) stopBtn.disabled = true; }
+  }
+
+  async function playAllTag(tag) {
+    const visiblePhrases = tag.phrases.filter(p => {
+      if (currentFilter === 'mastered') return p.mastered;
+      if (currentFilter === 'not-mastered') return !p.mastered;
+      return true;
+    });
+
+    if (!visiblePhrases.length) { alert("Nenhuma frase para ouvir com o filtro atual."); return; }
+    
+    window.speechSynthesis.cancel();
+    const myToken = ++queueToken;
+    isPlayingAll = true;
+    enableStopBtn();
+    const lis = tagsContainer.querySelectorAll(`ol.phrases li`);
+    
+    do {
+      for (let i = 0; i < visiblePhrases.length; i++) {
+        if (myToken !== queueToken) { isPlayingAll = false; return; }
+        const li = Array.from(lis).find(el => el.dataset.phraseId === visiblePhrases[i].id);
+        if (li) li.classList.add("speaking");
+        
+        for (let r = 0; r < settings.repeat; r++) {
+          if (myToken !== queueToken) break;
+          await speakOnce(visiblePhrases[i].text);
+          incrementPlayCount(tag.id, visiblePhrases[i].id);
+          if (r < settings.repeat - 1) await waitPause(settings.pause, myToken);
+        }
+        
+        if (li) li.classList.remove("speaking");
+        if (i < visiblePhrases.length - 1) await waitPause(settings.pause, myToken);
+      }
+      
+      if (loopMode && myToken === queueToken) await waitPause(settings.pause > 0 ? settings.pause : 1, myToken);
+    } while (loopMode && myToken === queueToken);
+
+    isPlayingAll = false;
+    if (myToken === queueToken) { const stopBtn = $("stopBtnLocal"); if (stopBtn) stopBtn.disabled = true; }
+  }
+
+  function checkDictation(originalText, inputElement, feedbackElement) {
+    const cleanStr = (str) => str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g,"").replace(/\s{2,}/g," ").trim();
+    const userVal = inputElement.value;
+    const isCorrect = cleanStr(userVal) === cleanStr(originalText);
+
+    inputElement.classList.remove("correct", "incorrect");
+    feedbackElement.classList.remove("correct", "incorrect");
+    inputElement.disabled = true; 
+
+    if (isCorrect) {
+      inputElement.classList.add("correct");
+      feedbackElement.textContent = "🟢 Excelente! Você acertou.";
+      feedbackElement.className = "dictation-feedback correct";
+    } else {
+      inputElement.classList.add("incorrect");
+      feedbackElement.innerHTML = `🔴 Incorreto. O correto era: <strong>"${originalText}"</strong>`;
+      feedbackElement.className = "dictation-feedback incorrect";
+    }
+  }
+
+  function render() {
+    [tagSelect, txtTagSelect].forEach(selectEl => {
+      const currentVal = selectEl.value; 
+      selectEl.innerHTML = "";
+      if (data.length === 0) {
+        const opt = document.createElement("option");
+        opt.textContent = "— Nenhuma tag —"; opt.value = "";
+        selectEl.appendChild(opt);
+      } else {
+        data.forEach(t => {
+          const opt = document.createElement("option");
+          opt.value = t.id; opt.textContent = t.name;
+          if (t.id === activeTagId && selectEl === tagSelect) opt.selected = true;
+          if (t.id === currentVal && selectEl === txtTagSelect) opt.selected = true;
+          selectEl.appendChild(opt);
+        });
+        if (selectEl === txtTagSelect && !selectEl.value) selectEl.value = activeTagId;
+      }
+    });
+
+    if (data.length === 0) {
+      emptyState.style.display = "block"; tagsContainer.innerHTML = ""; return;
+    }
+    emptyState.style.display = "none";
+
+    tagsContainer.innerHTML = "";
+    const tag = data.find(t => t.id === activeTagId);
+    if (!tag) return;
+
+    const block = document.createElement("div");
+    block.className = "tag-block";
+    const header = document.createElement("div");
+    header.className = "tag-header";
+    const nameEl = document.createElement("span");
+    nameEl.className = "tag-name"; nameEl.textContent = tag.name;
+    const actions = document.createElement("div");
+    actions.className = "tag-actions";
+
+    const playAllBtn = document.createElement("button");
+    playAllBtn.className = "secondary small"; playAllBtn.textContent = "▶️ Ouvir tudo";
+    playAllBtn.addEventListener("click", () => playAllTag(tag));
+
+    const translateAllBtn = document.createElement("button");
+    translateAllBtn.className = "secondary small"; translateAllBtn.textContent = "🇧🇷 Traduzir Tudo";
+    translateAllBtn.addEventListener("click", () => translateWholeTag(tag, translateAllBtn));
+
+    const loopLabel = document.createElement("label");
+    loopLabel.className = "loop-label"; loopLabel.title = "Tocar em loop infinito";
+    const loopCheck = document.createElement("input");
+    loopCheck.type = "checkbox"; loopCheck.checked = loopMode;
+    loopCheck.addEventListener("change", (e) => { loopMode = e.target.checked; });
+    loopLabel.appendChild(loopCheck); loopLabel.appendChild(document.createTextNode("🔁 Loop"));
+
+    const localStopBtn = document.createElement("button");
+    localStopBtn.id = "stopBtnLocal"; localStopBtn.className = "danger small";
+    localStopBtn.textContent = "⏹ Parar"; localStopBtn.disabled = true;
+    localStopBtn.addEventListener("click", stopAudio);
+
+    const delBtn = document.createElement("button");
+    delBtn.className = "ghost"; delBtn.textContent = "🗑 Remover tag";
+    delBtn.addEventListener("click", () => removeTag(tag.id));
+
+    actions.appendChild(playAllBtn);
+    actions.appendChild(translateAllBtn);
+    actions.appendChild(loopLabel);
+    actions.appendChild(localStopBtn);
+    actions.appendChild(delBtn);
+    
+    header.appendChild(nameEl); header.appendChild(actions); block.appendChild(header);
+
+    const filteredPhrases = tag.phrases.filter(p => {
+      if (currentFilter === 'mastered') return p.mastered;
+      if (currentFilter === 'not-mastered') return !p.mastered;
+      return true;
+    });
+
+    if (filteredPhrases.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "empty"; 
+      empty.textContent = currentFilter === 'all' ? "Nenhuma frase nesta tag." : "Nenhuma frase corresponde ao filtro.";
+      block.appendChild(empty);
+    } else {
+      const ol = document.createElement("ol");
+      ol.className = "phrases";
+
+      filteredPhrases.forEach((p) => {
+        const li = document.createElement("li");
+        li.dataset.phraseId = p.id;
+        if (p.mastered) li.classList.add("mastered");
+
+        const contentDiv = document.createElement("div");
+        contentDiv.className = "phrase-content";
+
+        const txt = document.createElement("span");
+        txt.className = "phrase-text original-english-text";
+        txt.textContent = p.text;
+
+        const revText = document.createElement("span");
+        revText.className = "phrase-text reverse-portuguese-text";
+        
+        if (reverseMode) {
+          if (p.translation) {
+            revText.textContent = p.translation;
+          } else {
+            revText.textContent = "(Sem tradução)";
+            revText.style.opacity = "0.5";
+          }
+        }
+
+        const transEl = document.createElement("div");
+        transEl.className = "translation-text";
+        
+        li.addEventListener("click", e => {
+          if (e.target.closest("button") || e.target.closest(".dictation-area")) return;
+          if ((quizMode || blindMode || reverseMode) && !li.classList.contains("revealed")) {
+            li.classList.add("revealed");
+            if (reverseMode) speak(p.text, li, false, tag.id, p.id);
+            return;
+          }
+          speak(p.text, li, false, tag.id, p.id);
+        });
+
+        txt.addEventListener("dblclick", e => {
+          e.stopPropagation();
+          if ((quizMode || blindMode || reverseMode) && !li.classList.contains("revealed")) return;
+          editPhrase(tag.id, p.id, txt);
+        });
+
+        contentDiv.appendChild(txt);
+        contentDiv.appendChild(revText);
+        contentDiv.appendChild(transEl);
+
+        if (dictationMode) {
+          const dictArea = document.createElement("div");
+          dictArea.className = "dictation-area";
+          const dictInput = document.createElement("input");
+          dictInput.type = "text"; dictInput.className = "dictation-input"; dictInput.placeholder = "Digite o que ouviu...";
+          dictInput.addEventListener("click", e => e.stopPropagation());
+          dictInput.addEventListener("keydown", e => { if (e.key === "Enter") checkDictation(p.text, dictInput, dictFeedback); });
+
+          const dictCheckBtn = document.createElement("button");
+          dictCheckBtn.className = "secondary small"; dictCheckBtn.textContent = "Verificar";
+          dictCheckBtn.addEventListener("click", (e) => { e.stopPropagation(); checkDictation(p.text, dictInput, dictFeedback); });
+
+          const dictFeedback = document.createElement("div");
+          dictFeedback.className = "dictation-feedback";
+
+          dictArea.appendChild(dictInput); dictArea.appendChild(dictCheckBtn); dictArea.appendChild(dictFeedback);
+          contentDiv.appendChild(dictArea);
+        }
+
+        const spk = document.createElement("span");
+        spk.className = "speaker"; spk.textContent = "🔊";
+
+        const countEl = document.createElement("span");
+        const count = p.playCount || 0;
+        countEl.className = "play-count" + (count === 0 ? " zero" : "");
+        countEl.textContent = `👂 ${count}x`;
+
+        const masteredBtn = document.createElement("button");
+        masteredBtn.className = "mastered-btn" + (p.mastered ? " is-mastered" : "");
+        masteredBtn.title = p.mastered ? "Desmarcar como dominada" : "Marcar como dominada";
+        masteredBtn.textContent = "✔️";
+        masteredBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          toggleMastered(tag.id, p.id);
+        });
+
+        const transBtn = document.createElement("button");
+        transBtn.className = "translate-btn trans-btn-icon"; transBtn.textContent = "🇧🇷";
+        transBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          handleTranslatePhrase(p.id, { english: p.text, translation: p.translation }, transEl, transBtn);
+        });
+
+        const editBtn = document.createElement("button");
+        editBtn.className = "ghost"; editBtn.textContent = "✏️";
+        editBtn.addEventListener("click", e => {
+          e.stopPropagation();
+          if ((quizMode || blindMode || reverseMode) && !li.classList.contains("revealed")) return;
+          editPhrase(tag.id, p.id, txt);
+        });
+
+        const del = document.createElement("button");
+        del.className = "ghost"; del.textContent = "✕";
+        del.addEventListener("click", e => { e.stopPropagation(); removePhrase(tag.id, p.id); });
+
+        li.appendChild(contentDiv);
+        li.appendChild(countEl);
+        li.appendChild(spk);
+        li.appendChild(masteredBtn);
+        li.appendChild(transBtn);
+        li.appendChild(editBtn);
+        li.appendChild(del);
+        ol.appendChild(li);
+      });
+      block.appendChild(ol);
+    }
+
+    tagsContainer.appendChild(block);
+    if (window.speechSynthesis && window.speechSynthesis.speaking) enableStopBtn();
+  }
+
+  // ====== SINCRONIZAÇÃO EM TEMPO REAL COM O FIREBASE ======
+  function setupFirebaseSync() {
+    if (!window.firebaseDB || !window.firebaseDB.db) return;
+    const { db, ref, onValue } = window.firebaseDB;
+
+    onValue(ref(db, 'appData'), (snapshot) => {
+      const remoteData = snapshot.val();
+      if (remoteData && Array.isArray(remoteData)) {
+        const localStr = JSON.stringify(data);
+        const remoteStr = JSON.stringify(remoteData);
+        
+        if (localStr !== remoteStr) {
+          data = remoteData;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          
+          if (data.length && !data.find(t => t.id === activeTagId)) {
+            activeTagId = data[0].id;
+          }
+          
+          render();
+        }
+      } else if (data.length > 0) {
+        saveData();
+      }
+    });
+  }
+
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.onvoiceschanged = () => {};
+    window.speechSynthesis.getVoices();
+  }
+
+  render();
+  
+  // Inicia a escuta do Firebase após um pequeno delay
+  setTimeout(setupFirebaseSync, 1000);
 </script>
 </body>
 </html>
