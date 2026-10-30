@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flashcards PT ⇄ EN</title>
+<title>Flashcards PT ⇄ EN - Nuvem</title>
 <style>
   :root {
     --bg-body: #f4f5f7;
@@ -141,7 +141,6 @@
   }
   .stats span { background: var(--bg-card); padding: 6px 10px; border-radius: 6px; box-shadow: 0 1px 3px var(--shadow-light); }
 
-  /* --- ACCORDION DE CATEGORIAS --- */
   .cat-accordion {
     background: var(--bg-panel);
     border-radius: 12px;
@@ -150,9 +149,7 @@
     overflow: hidden;
     border: 2px solid transparent;
   }
-  .cat-accordion.active {
-    border-color: var(--nav-text);
-  }
+  .cat-accordion.active { border-color: var(--nav-text); }
   .cat-header {
     display: flex;
     justify-content: space-between;
@@ -172,12 +169,7 @@
     background: var(--bg-card);
   }
   .cat-content.open { display: block; }
-  .cat-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
+  .cat-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
   .cat-pill {
     padding: 6px 12px;
     border-radius: 20px;
@@ -196,18 +188,10 @@
     border-color: var(--nav-text);
     font-weight: 600;
   }
-  .cat-pill .del-cat {
-    color: var(--wrong-text);
-    font-weight: bold;
-    font-size: 1rem;
-    line-height: 1;
-  }
+  .cat-pill .del-cat { color: var(--wrong-text); font-weight: bold; font-size: 1rem; line-height: 1; }
   .cat-pill .del-cat:hover { transform: scale(1.2); }
   
-  .add-cat-form {
-    display: flex;
-    gap: 8px;
-  }
+  .add-cat-form { display: flex; gap: 8px; }
   .add-cat-form input {
     flex: 1;
     padding: 8px 12px;
@@ -228,12 +212,7 @@
     font-size: 0.85rem;
   }
 
-  /* --- CARD --- */
-  .card-area {
-    perspective: 1200px;
-    height: 260px;
-    margin-bottom: 16px;
-  }
+  .card-area { perspective: 1200px; height: 260px; margin-bottom: 16px; }
   .card {
     position: relative;
     width: 100%;
@@ -267,12 +246,7 @@
   }
   .card-text { font-size: 1.6rem; font-weight: 600; line-height: 1.3; }
 
-  .actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
   .actions button {
     padding: 14px;
     border: none;
@@ -288,12 +262,7 @@
   .btn-wrong:hover { background: var(--wrong-hover); }
   .btn-right:hover { background: var(--right-hover); }
 
-  .nav-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 24px;
-  }
+  .nav-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
   .nav-actions button {
     padding: 12px;
     border: none;
@@ -356,11 +325,7 @@
   }
   .add-form button:hover { background: var(--btn-dark-hover); }
 
-  .io-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
+  .io-row { display: flex; flex-wrap: wrap; gap: 8px; }
   .io-row button, .io-row label {
     flex: 1;
     min-width: 120px;
@@ -429,7 +394,7 @@
 <body>
 <div class="app">
   <header>
-    <h1>Flashcards</h1>
+    <h1>Flashcards <span style="font-size:0.7rem;color:var(--text-muted);font-weight:normal;">(Nuvem)</span></h1>
     <div class="header-controls">
       <div class="direction-toggle">
         <button id="dirPTEN" class="active">PT → EN</button>
@@ -445,16 +410,13 @@
     <span>📚 <b id="statTotal">0</b> cards</span>
   </div>
 
-  <!-- ACCORDION DE CATEGORIAS -->
   <div class="cat-accordion" id="catAccordion">
     <div class="cat-header" id="catHeader">
       <span>📂 Categoria Ativa: <span class="cat-current" id="catCurrent">Geral</span></span>
       <span id="catArrow" style="font-size: 0.8rem;">▼</span>
     </div>
     <div class="cat-content" id="catContent">
-      <div class="cat-list" id="catList">
-        <!-- Categorias injetadas via JS -->
-      </div>
+      <div class="cat-list" id="catList"></div>
       <div class="add-cat-form">
         <input type="text" id="inputNewCat" placeholder="Nova categoria...">
         <button id="btnAddCat">Criar</button>
@@ -466,7 +428,7 @@
     <div class="card" id="card">
       <div class="card-face front">
         <div class="card-lang" id="langFront">Português</div>
-        <div class="card-text" id="textFront">Adicione um card abaixo</div>
+        <div class="card-text" id="textFront">Carregando nuvem...</div>
       </div>
       <div class="card-face back">
         <div class="card-lang" id="langBack">Inglês</div>
@@ -512,24 +474,34 @@
 
 <div class="toast" id="toast"></div>
 
-<script>
-(function () {
-  "use strict";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
-  const STORAGE_KEY = "flashcards_data_v2";
-  const STATS_KEY = "flashcards_stats_v1";
-  const CATS_KEY = "flashcards_categories_v1";
-  const THEME_KEY = "flashcards_theme";
+  const firebaseConfig = {
+    apiKey: "AIzaSyCeOVz5jRue8Y1Io7hAndWd-iwTlvaS9eI",
+    authDomain: "entendi-flashcards.firebaseapp.com",
+    projectId: "entendi-flashcards",
+    storageBucket: "entendi-flashcards.firebasestorage.app",
+    messagingSenderId: "181208616106",
+    appId: "1:181208616106:web:dbbbb7689af03e761f94d3",
+    measurementId: "G-ZFP29T103F"
+  };
 
-  let cards = [];        // [{en, pt, cat}]
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  let cards = [];
   let categories = ["Geral"]; 
-  let activeCategory = "Geral"; // Sempre tem uma categoria ativa
+  let activeCategory = "Geral"; 
   let stats = { right: 0, wrong: 0 };
   let direction = "pt-en"; 
-  
   let deck = [];         
   let currentIndex = 0;
   let flipped = false;
+  let syncTimeout = null;
+
+  const THEME_KEY = "flashcards_theme";
 
   const $ = (id) => document.getElementById(id);
   const cardEl = $("card");
@@ -538,56 +510,71 @@
   const langFront = $("langFront");
   const langBack = $("langBack");
 
-  // ---------- Persistência ----------
-  function load() {
+  async function loadFromCloud() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) cards = JSON.parse(raw) || [];
+      const docRef = doc(db, "flashcards", "data");
+      const docSnap = await getDoc(docRef);
       
-      const rawCats = localStorage.getItem(CATS_KEY);
-      if (rawCats) categories = JSON.parse(rawCats) || ["Geral"];
-
-      const rawStats = localStorage.getItem(STATS_KEY);
-      if (rawStats) stats = JSON.parse(rawStats) || { right: 0, wrong: 0 };
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        cards = data.cards || [];
+        categories = data.categories || ["Geral"];
+        stats = data.stats || { right: 0, wrong: 0 };
+        if (data.activeCategory && categories.includes(data.activeCategory)) {
+            activeCategory = data.activeCategory;
+        }
+      } else {
+        await saveToCloud(); 
+      }
       
       const savedTheme = localStorage.getItem(THEME_KEY);
       if (savedTheme) {
         document.documentElement.setAttribute('data-theme', savedTheme);
         $("themeBtn").textContent = savedTheme === 'dark' ? '☀️' : '🌙';
       }
-    } catch (e) { console.warn("Load error", e); }
+    } catch (e) {
+      console.error("Erro ao carregar", e);
+      toast("Erro de conexão com o banco.");
+    }
     
     if (!categories.includes("Geral")) categories.unshift("Geral");
     cards.forEach(c => { if (!c.cat || !categories.includes(c.cat)) c.cat = "Geral"; });
-    
-    // Garante que a categoria ativa exista
     if (!categories.includes(activeCategory)) activeCategory = "Geral";
-  }
-  
-  function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
-    localStorage.setItem(CATS_KEY, JSON.stringify(categories));
-    localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+    
+    updateUI();
   }
 
-  // ---------- Toast ----------
-  let toastTimer;
+  function saveToCloud() {
+    if (syncTimeout) clearTimeout(syncTimeout);
+    syncTimeout = setTimeout(async () => {
+      try {
+        const docRef = doc(db, "flashcards", "data");
+        await setDoc(docRef, {
+          cards: cards,
+          categories: categories,
+          stats: stats,
+          activeCategory: activeCategory
+        });
+      } catch (e) {
+        console.error("Erro ao salvar", e);
+        toast("Erro ao salvar na nuvem.");
+      }
+    }, 800);
+  }
+
   function toast(msg) {
     const t = $("toast");
     t.textContent = msg;
     t.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove("show"), 2000);
+    setTimeout(() => t.classList.remove("show"), 2000);
   }
 
-  // ---------- Filtro e Deck ----------
   function buildDeck() {
     deck = cards.filter(c => c.cat === activeCategory);
     if (currentIndex >= deck.length) currentIndex = 0;
     if (deck.length === 0) currentIndex = 0;
   }
 
-  // ---------- Render ----------
   function renderCategories() {
     const list = $("catList");
     list.innerHTML = "";
@@ -599,31 +586,22 @@
       const span = document.createElement("span");
       span.textContent = cat;
       span.style.flex = "1";
-      span.onclick = () => { 
-        activeCategory = cat; 
-        updateUI(); 
-      };
+      span.onclick = () => { activeCategory = cat; saveToCloud(); updateUI(); };
       pill.appendChild(span);
 
       if (cat !== "Geral") {
         const del = document.createElement("span");
         del.className = "del-cat";
         del.textContent = "×";
-        del.title = "Excluir categoria e todas as suas frases";
         del.onclick = (e) => {
           e.stopPropagation();
           if (confirm(`Excluir a categoria "${cat}"?\n\nATENÇÃO: Todas as frases dentro dela também serão apagadas!`)) {
-            // Remove a categoria
             categories = categories.filter(c => c !== cat);
-            // Remove TODAS as frases que pertencem a essa categoria
             cards = cards.filter(c => c.cat !== cat); 
-            
-            // Se a categoria apagada era a ativa, volta pra Geral
             if (activeCategory === cat) activeCategory = "Geral";
-            
-            save();
+            saveToCloud();
             updateUI();
-            toast(`Categoria "${cat}" e suas frases foram excluídas.`);
+            toast(`Categoria "${cat}" excluída.`);
           }
         };
         pill.appendChild(del);
@@ -637,7 +615,6 @@
     $("badgeAdd").textContent = `em: ${activeCategory}`;
     $("badgeImport").textContent = `Importa para: ${activeCategory}`;
     
-    // Destaque visual na sanfona se não for "Geral"
     if (activeCategory !== "Geral") {
       $("catAccordion").classList.add("active");
     } else {
@@ -704,7 +681,7 @@
       del.textContent = "🗑";
       del.onclick = () => {
         cards.splice(realIndex, 1);
-        save(); 
+        saveToCloud(); 
         buildDeck();
         updateUI();
         toast("Card excluído");
@@ -722,7 +699,6 @@
     }[m]));
   }
 
-  // ---------- Áudio ----------
   function speak(text, lang) {
     if (!("speechSynthesis" in window)) return;
     window.speechSynthesis.cancel();
@@ -732,13 +708,10 @@
     window.speechSynthesis.speak(u);
   }
 
-  // ---------- Vira/desvira ----------
   cardEl.addEventListener("click", (e) => {
     if (deck.length === 0) return;
-    
     flipped = !flipped;
     cardEl.classList.toggle("flipped", flipped);
-
     if (flipped) {
       const c = deck[currentIndex];
       speak(c.en, "en"); 
@@ -747,7 +720,6 @@
     }
   });
 
-  // ---------- Ações de navegação ----------
   function nextCard() {
     if (deck.length === 0) return;
     currentIndex = (currentIndex + 1) % deck.length;
@@ -762,21 +734,20 @@
   $("btnRight").onclick = () => {
     if (deck.length === 0) return;
     stats.right++;
-    save();
+    saveToCloud();
     nextCard();
     updateStats();
   };
   $("btnWrong").onclick = () => {
     if (deck.length === 0) return;
     stats.wrong++;
-    save();
+    saveToCloud();
     nextCard();
     updateStats();
   };
   $("btnPrev").onclick = () => { if (deck.length > 0) prevCard(); };
   $("btnNext").onclick = () => { if (deck.length > 0) nextCard(); };
 
-  // ---------- Accordion Control ----------
   $("catHeader").onclick = () => {
     const content = $("catContent");
     const arrow = $("catArrow");
@@ -784,15 +755,13 @@
     arrow.textContent = content.classList.contains("open") ? "▲" : "▼";
   };
 
-  // ---------- Criar Categoria ----------
   $("btnAddCat").onclick = () => {
     const newCat = $("inputNewCat").value.trim();
     if (!newCat) return;
     if (categories.includes(newCat)) { toast("Categoria já existe"); return; }
-    
     categories.push(newCat);
-    activeCategory = newCat; // Ativa a nova categoria
-    save();
+    activeCategory = newCat; 
+    saveToCloud();
     $("inputNewCat").value = "";
     updateUI(); 
     toast(`Categoria "${newCat}" criada e ativada`);
@@ -801,7 +770,6 @@
     if (e.key === "Enter") $("btnAddCat").click();
   });
 
-  // ---------- Direção ----------
   $("dirPTEN").onclick = () => {
     direction = "pt-en";
     $("dirPTEN").classList.add("active");
@@ -815,11 +783,9 @@
     renderCard();
   };
 
-  // ---------- Tema ----------
   $("themeBtn").onclick = () => {
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     const newTheme = isDark ? 'light' : 'dark';
-    
     if (newTheme === 'dark') {
       document.documentElement.setAttribute('data-theme', 'dark');
       $("themeBtn").textContent = '☀️';
@@ -830,21 +796,15 @@
     localStorage.setItem(THEME_KEY, newTheme);
   };
 
-  // ---------- Adicionar Card ----------
   $("btnAdd").onclick = () => {
     const en = $("inputEN").value.trim();
     const pt = $("inputPT").value.trim();
-    
     if (!en || !pt) { toast("Preencha os dois campos"); return; }
-    
-    // Salva diretamente na categoria ativa
     cards.push({ en, pt, cat: activeCategory });
-    save();
-    
+    saveToCloud();
     $("inputEN").value = "";
     $("inputPT").value = "";
     $("inputEN").focus();
-    
     buildDeck();
     updateUI();
     toast(`Card adicionado em "${activeCategory}"`);
@@ -855,7 +815,6 @@
     });
   });
 
-  // ---------- Export TXT ----------
   function download(filename, content, mime) {
     const blob = new Blob([content], { type: mime || "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -870,13 +829,11 @@
 
   $("btnExportTxt").onclick = () => {
     if (cards.length === 0) { toast("Nada para exportar"); return; }
-    // Formato: (Inglês | Português | Categoria)
     const lines = cards.map((c) => `(${c.en} | ${c.pt} | ${c.cat})`).join("\n");
     download("flashcards.txt", lines);
     toast("TXT exportado com sucesso");
   };
 
-  // ---------- Export JSON ----------
   $("btnExportJson").onclick = () => {
     const data = {
       app: "flashcards",
@@ -891,22 +848,17 @@
     toast("JSON exportado com sucesso");
   };
 
-  // ---------- Importar (Lógica Unificada) ----------
   function processImport(importedCards) {
     if (importedCards.length === 0) { toast("Nenhuma frase válida encontrada"); return; }
-    
-    // Força todos os cards importados a irem para a categoria ativa atual
     importedCards.forEach(c => {
       cards.push({ en: c.en, pt: c.pt, cat: activeCategory });
     });
-    
-    save();
+    saveToCloud();
     buildDeck();
     updateUI();
     toast(`${importedCards.length} frase(s) importada(s) para "${activeCategory}"`);
   }
 
-  // ---------- Import TXT ----------
   $("fileTxt").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -933,7 +885,6 @@
     e.target.value = "";
   });
 
-  // ---------- Import JSON ----------
   $("fileJson").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -953,11 +904,6 @@
           }))
           .filter(c => c.en && c.pt);
 
-        if (data && data.stats) {
-          stats.right += Number(data.stats.right) || 0;
-          stats.wrong += Number(data.stats.wrong) || 0;
-        }
-        
         processImport(importedCards);
       } catch (err) {
         toast("Arquivo JSON inválido");
@@ -967,10 +913,7 @@
     e.target.value = "";
   });
 
-  // ---------- Init ----------
-  load();
-  updateUI(); 
-})();
+  loadFromCloud();
 </script>
 </body>
 </html>
