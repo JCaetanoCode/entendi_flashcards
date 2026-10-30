@@ -476,7 +476,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+  import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCeOVz5jRue8Y1Io7hAndWd-iwTlvaS9eI",
@@ -490,6 +490,9 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  
+  // Referência única do documento no Firestore
+  const docRef = doc(db, "flashcards", "data");
 
   let cards = [];
   let categories = ["Geral"]; 
@@ -500,6 +503,7 @@
   let currentIndex = 0;
   let flipped = false;
   let syncTimeout = null;
+  let isFirstLoad = true; // Evita re-salvar dados recém-baixados
 
   const THEME_KEY = "flashcards_theme";
 
@@ -510,56 +514,54 @@
   const langFront = $("langFront");
   const langBack = $("langBack");
 
-  async function loadFromCloud() {
-    try {
-      const docRef = doc(db, "flashcards", "data");
-      const docSnap = await getDoc(docRef);
-      
+  // --- TEMPO REAL (onSnapshot) ---
+  function initRealtimeListener() {
+    onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
+        
+        // Atualiza as variáveis locais com o que veio da nuvem
         cards = data.cards || [];
         categories = data.categories || ["Geral"];
         stats = data.stats || { right: 0, wrong: 0 };
+        
         if (data.activeCategory && categories.includes(data.activeCategory)) {
             activeCategory = data.activeCategory;
         }
+
+        if (!categories.includes("Geral")) categories.unshift("Geral");
+        cards.forEach(c => { if (!c.cat || !categories.includes(c.cat)) c.cat = "Geral"; });
+        if (!categories.includes(activeCategory)) activeCategory = "Geral";
+        
+        updateUI();
       } else {
-        await saveToCloud(); 
+        // Se o documento não existe (primeira vez), cria ele
+        saveToCloud();
       }
-      
-      const savedTheme = localStorage.getItem(THEME_KEY);
-      if (savedTheme) {
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        $("themeBtn").textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-      }
-    } catch (e) {
-      console.error("Erro ao carregar", e);
+      isFirstLoad = false;
+    }, (error) => {
+      console.error("Erro no tempo real:", error);
       toast("Erro de conexão com o banco.");
-    }
-    
-    if (!categories.includes("Geral")) categories.unshift("Geral");
-    cards.forEach(c => { if (!c.cat || !categories.includes(c.cat)) c.cat = "Geral"; });
-    if (!categories.includes(activeCategory)) activeCategory = "Geral";
-    
-    updateUI();
+    });
   }
 
   function saveToCloud() {
+    if (isFirstLoad) return; // Impede que o app salve por cima do banco logo que abre
+
     if (syncTimeout) clearTimeout(syncTimeout);
     syncTimeout = setTimeout(async () => {
       try {
-        const docRef = doc(db, "flashcards", "data");
         await setDoc(docRef, {
           cards: cards,
           categories: categories,
           stats: stats,
           activeCategory: activeCategory
-        });
+        }, { merge: true }); // Merge evita apagar dados que vieram no meio do processo
       } catch (e) {
         console.error("Erro ao salvar", e);
         toast("Erro ao salvar na nuvem.");
       }
-    }, 800);
+    }, 800); // Espera 800ms de silêncio antes de enviar (Debounce)
   }
 
   function toast(msg) {
@@ -669,7 +671,9 @@
     }
 
     deck.forEach((c) => {
-      const realIndex = cards.indexOf(c);
+      // Encontra o índice real no array global de cards
+      const realIndex = cards.findIndex(card => card.en === c.en && card.pt === c.pt && card.cat === c.cat);
+      
       const div = document.createElement("div");
       div.className = "list-item";
       
@@ -680,11 +684,13 @@
       const del = document.createElement("button");
       del.textContent = "🗑";
       del.onclick = () => {
-        cards.splice(realIndex, 1);
-        saveToCloud(); 
-        buildDeck();
-        updateUI();
-        toast("Card excluído");
+        if(realIndex > -1) {
+            cards.splice(realIndex, 1);
+            saveToCloud(); 
+            buildDeck();
+            updateUI();
+            toast("Card excluído");
+        }
       };
       
       div.appendChild(pair);
@@ -913,7 +919,16 @@
     e.target.value = "";
   });
 
-  loadFromCloud();
+  // --- CARREGAR TEMA E INICIAR ---
+  const savedTheme = localStorage.getItem(THEME_KEY);
+  if (savedTheme) {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    $("themeBtn").textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+  }
+
+  // Inicia a conexão em tempo real
+  initRealtimeListener();
+
 </script>
 </body>
 </html>
