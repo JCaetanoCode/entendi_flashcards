@@ -678,7 +678,6 @@
         activeCategory = cat; 
         isReviewMode = false; 
         mistakes = [];        
-        sessionStatus = {}; // Limpa os selos ao mudar de categoria
         currentIndex = 0;
         buildDeck();
         saveToCloud(); 
@@ -933,7 +932,6 @@
   $("btnReviewMode").onclick = () => {
     isReviewMode = !isReviewMode;
     currentIndex = 0;
-    sessionStatus = {}; // Limpa os selos ao entrar/sair do modo revisão
     if (isReviewMode) {
       if (mistakes.length === 0) {
         toast("Você ainda não errou nenhum card!");
