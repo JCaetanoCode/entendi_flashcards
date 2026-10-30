@@ -510,7 +510,45 @@
   const langFront = $("langFront");
   const langBack = $("langBack");
 
-  async function loadFromCloud() {
+    function loadFromCloud() {
+    const docRef = doc(db, "flashcards", "data");
+    
+    // O onSnapshot fica "ouvindo" o banco em tempo real
+    onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        
+        // Só atualiza a tela se a mudança não tiver vindo do próprio dispositivo
+        // (para não atrapalhar a digitação, por exemplo)
+        cards = data.cards || [];
+        categories = data.categories || ["Geral"];
+        stats = data.stats || { right: 0, wrong: 0 };
+        
+        if (data.activeCategory && categories.includes(data.activeCategory)) {
+            activeCategory = data.activeCategory;
+        }
+        
+        if (!categories.includes("Geral")) categories.unshift("Geral");
+        cards.forEach(c => { if (!c.cat || !categories.includes(c.cat)) c.cat = "Geral"; });
+        if (!categories.includes(activeCategory)) activeCategory = "Geral";
+        
+        updateUI(); // Atualiza a tela instantaneamente
+      } else {
+        // Se o documento não existir (primeira vez), cria ele
+        saveToCloud();
+      }
+    }, (error) => {
+      console.error("Erro ao ouvir o banco:", error);
+      toast("Erro de conexão em tempo real.");
+    });
+
+    // Carrega o tema (isso continua igual)
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      $("themeBtn").textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+    }
+  }
     try {
       const docRef = doc(db, "flashcards", "data");
       const docSnap = await getDoc(docRef);
