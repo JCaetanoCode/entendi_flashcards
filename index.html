@@ -33,8 +33,6 @@
     --nav-hover: #c7d2fe;
     --highlight: #fff3cd;
     --highlight-text: #856404;
-    --review-bg: #f3e8ff;
-    --review-text: #6b21a8;
   }
 
   [data-theme="dark"] {
@@ -65,8 +63,6 @@
     --nav-hover: #2e2a6b;
     --highlight: #3d3215;
     --highlight-text: #ffe08a;
-    --review-bg: #3b1d5c;
-    --review-text: #d8b4fe;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
@@ -136,54 +132,14 @@
     box-shadow: 0 1px 2px var(--shadow-light);
   }
 
-  .stats-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  
   .stats {
     display: flex;
-    gap: 8px;
+    gap: 12px;
     font-size: 0.8rem;
     color: var(--text-muted);
-    align-items: center;
+    margin-bottom: 16px;
   }
   .stats span { background: var(--bg-card); padding: 6px 10px; border-radius: 6px; box-shadow: 0 1px 3px var(--shadow-light); }
-  
-  .btn-clear-stats {
-    background: transparent;
-    border: none;
-    color: var(--text-light);
-    font-size: 0.75rem;
-    cursor: pointer;
-    text-decoration: underline;
-    margin-left: 4px;
-  }
-  .btn-clear-stats:hover { color: var(--wrong-text); }
-
-  .btn-review {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    color: var(--text-muted);
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 1px 3px var(--shadow-light);
-  }
-  .btn-review.active {
-    background: var(--review-bg);
-    color: var(--review-text);
-    border-color: var(--review-text);
-  }
 
   .cat-accordion {
     background: var(--bg-panel);
@@ -281,19 +237,6 @@
     text-align: center;
   }
   .card-face.back { transform: rotateY(180deg); }
-  
-  /* SELO DE STATUS NOVO */
-  .card-badge {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    font-size: 1.5rem;
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
-  }
-  .card-badge.show { opacity: 1; }
-
   .card-lang {
     font-size: 0.75rem;
     text-transform: uppercase;
@@ -319,7 +262,7 @@
   .btn-wrong:hover { background: var(--wrong-hover); }
   .btn-right:hover { background: var(--right-hover); }
 
-  .nav-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
+  .nav-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
   .nav-actions button {
     padding: 12px;
     border: none;
@@ -333,14 +276,6 @@
   }
   .nav-actions button:hover { background: var(--nav-hover); }
   .nav-actions button:active { transform: scale(0.97); }
-
-  .progress-row {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 24px;
-  }
-  .progress-text { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
 
   .panel {
     background: var(--bg-panel);
@@ -378,7 +313,22 @@
     color: var(--text-main);
   }
   .add-form input:focus { border-color: var(--text-muted); }
-  .add-form button {
+  
+  /* NOVO BOTÃO TRADUZIR */
+  #btnTranslate {
+    padding: 8px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-weight: 600;
+    margin-bottom: 4px;
+    transition: transform 0.1s;
+  }
+  #btnTranslate:active { transform: scale(0.97); }
+  #btnTranslate:disabled { opacity: 0.7; cursor: wait; }
+
+  .add-form button#btnAdd {
     padding: 10px;
     background: var(--btn-dark);
     color: var(--bg-card);
@@ -388,7 +338,7 @@
     cursor: pointer;
     font-weight: 500;
   }
-  .add-form button:hover { background: var(--btn-dark-hover); }
+  .add-form button#btnAdd:hover { background: var(--btn-dark-hover); }
 
   .io-row { display: flex; flex-wrap: wrap; gap: 8px; }
   .io-row button, .io-row label {
@@ -421,6 +371,8 @@
   .list-item .pair { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .list-item .pair b { color: var(--text-main); }
   .list-item .pair span { color: var(--text-muted); }
+  
+  /* BOTÕES DE EDITAR E EXCLUIR */
   .list-item button {
     background: transparent;
     border: none;
@@ -431,6 +383,13 @@
     color: var(--text-muted);
   }
   .list-item button:hover { background: var(--btn-hover); }
+  .list-item input {
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-body);
+    color: var(--text-main);
+  }
 
   .toast {
     position: fixed;
@@ -453,7 +412,6 @@
     .card-text { font-size: 1.3rem; }
     header h1 { font-size: 1.1rem; }
     .io-row button, .io-row label { min-width: 100%; }
-    .stats-bar { justify-content: center; }
   }
 </style>
 </head>
@@ -470,14 +428,10 @@
     </div>
   </header>
 
-  <div class="stats-bar">
-    <div class="stats">
-      <span>✅ <b id="statRight">0</b></span>
-      <span>❌ <b id="statWrong">0</b></span>
-      <span>📚 <b id="statTotal">0</b> cards</span>
-      <button class="btn-clear-stats" id="btnClearStats">🔄 Zerar</button>
-    </div>
-    <button class="btn-review" id="btnReviewMode">🎯 Revisar Erros</button>
+  <div class="stats">
+    <span>✅ <b id="statRight">0</b></span>
+    <span>❌ <b id="statWrong">0</b></span>
+    <span>📚 <b id="statTotal">0</b> cards</span>
   </div>
 
   <div class="cat-accordion" id="catAccordion">
@@ -497,12 +451,10 @@
   <div class="card-area">
     <div class="card" id="card">
       <div class="card-face front">
-        <div class="card-badge" id="badgeFront"></div>
         <div class="card-lang" id="langFront">Português</div>
         <div class="card-text" id="textFront">Carregando nuvem...</div>
       </div>
       <div class="card-face back">
-        <div class="card-badge" id="badgeBack"></div>
         <div class="card-lang" id="langBack">Inglês</div>
         <div class="card-text" id="textBack">—</div>
       </div>
@@ -519,15 +471,12 @@
     <button id="btnNext">Avançar ➡</button>
   </div>
 
-  <div class="progress-row">
-    <span class="progress-text" id="progressText">Card 0 de 0</span>
-  </div>
-
   <div class="panel">
     <h2>➕ Adicionar card <span class="badge" id="badgeAdd">em: Geral</span></h2>
     <div class="add-form">
       <input type="text" id="inputEN" placeholder="Inglês (ex: Good morning)">
       <input type="text" id="inputPT" placeholder="Português (ex: Bom dia)">
+      <button id="btnTranslate" style="background: var(--nav-bg); color: var(--nav-text);">🔄 Traduzir</button>
       <button id="btnAdd">Adicionar</button>
     </div>
   </div>
@@ -565,22 +514,17 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  
   const docRef = doc(db, "flashcards", "data");
 
-  let cards = [];             
+  let cards = [];
   let categories = ["Geral"]; 
   let activeCategory = "Geral"; 
   let stats = { right: 0, wrong: 0 };
   let direction = "pt-en"; 
-  
-  // --- CONTROLE DO ESTUDO ---
-  let deck = [];              
-  let currentIndex = 0;       
-  let flipped = false;        
-  let isReviewMode = false;   
-  let mistakes = [];          
-  let sessionStatus = {};     // NOVO: Guarda o status (right/wrong) dos cards na sessão atual
-  
+  let deck = [];         
+  let currentIndex = 0;
+  let flipped = false;
   let syncTimeout = null;
   let isFirstLoad = true;
 
@@ -592,10 +536,7 @@
   const textBack = $("textBack");
   const langFront = $("langFront");
   const langBack = $("langBack");
-  const badgeFront = $("badgeFront"); // NOVO
-  const badgeBack = $("badgeBack");   // NOVO
 
-  // --- TEMPO REAL (Firebase) ---
   function initRealtimeListener() {
     onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
@@ -613,7 +554,6 @@
         cards.forEach(c => { if (!c.cat || !categories.includes(c.cat)) c.cat = "Geral"; });
         if (!categories.includes(activeCategory)) activeCategory = "Geral";
         
-        buildDeck();
         updateUI();
       } else {
         saveToCloud();
@@ -651,14 +591,8 @@
     setTimeout(() => t.classList.remove("show"), 2000);
   }
 
-  // --- LÓGICA DO BARALHO (DECK) ---
   function buildDeck() {
-    if (isReviewMode) {
-      deck = [...mistakes];
-    } else {
-      deck = cards.filter(c => c.cat === activeCategory);
-    }
-
+    deck = cards.filter(c => c.cat === activeCategory);
     if (currentIndex >= deck.length) currentIndex = 0;
     if (deck.length === 0) currentIndex = 0;
   }
@@ -669,20 +603,12 @@
     
     categories.forEach(cat => {
       const pill = document.createElement("div");
-      pill.className = "cat-pill" + (activeCategory === cat && !isReviewMode ? " active" : "");
+      pill.className = "cat-pill" + (activeCategory === cat ? " active" : "");
       
       const span = document.createElement("span");
       span.textContent = cat;
       span.style.flex = "1";
-      span.onclick = () => { 
-        activeCategory = cat; 
-        isReviewMode = false; 
-        mistakes = [];        
-        currentIndex = 0;
-        buildDeck();
-        saveToCloud(); 
-        updateUI(); 
-      };
+      span.onclick = () => { activeCategory = cat; saveToCloud(); updateUI(); };
       pill.appendChild(span);
 
       if (cat !== "Geral") {
@@ -695,11 +621,7 @@
             categories = categories.filter(c => c !== cat);
             cards = cards.filter(c => c.cat !== cat); 
             if (activeCategory === cat) activeCategory = "Geral";
-            isReviewMode = false;
-            mistakes = [];
-            sessionStatus = {};
             saveToCloud();
-            buildDeck();
             updateUI();
             toast(`Categoria "${cat}" excluída.`);
           }
@@ -715,20 +637,13 @@
     $("badgeAdd").textContent = `em: ${activeCategory}`;
     $("badgeImport").textContent = `Importa para: ${activeCategory}`;
     
-    if (activeCategory !== "Geral" && !isReviewMode) {
+    if (activeCategory !== "Geral") {
       $("catAccordion").classList.add("active");
     } else {
       $("catAccordion").classList.remove("active");
     }
-
-    if (isReviewMode) {
-      $("btnReviewMode").classList.add("active");
-      $("btnReviewMode").textContent = "🎯 Revisando Erros";
-    } else {
-      $("btnReviewMode").classList.remove("active");
-      $("btnReviewMode").textContent = "🎯 Revisar Erros";
-    }
     
+    buildDeck();
     renderCategories();
     updateStats();
     renderCard();
@@ -744,23 +659,12 @@
 
   function renderCard() {
     if (deck.length === 0) {
-      $("progressText").textContent = "Card 0 de 0";
-    } else {
-      $("progressText").textContent = `Card ${currentIndex + 1} de ${deck.length}`;
-    }
-
-    if (deck.length === 0) {
       langFront.textContent = direction === "pt-en" ? "Português" : "Inglês";
       langBack.textContent = direction === "pt-en" ? "Inglês" : "Português";
-      textFront.textContent = isReviewMode 
-        ? "Nenhum erro para revisar! 🎉" 
-        : `Nenhum card em "${activeCategory}".`;
+      textFront.textContent = `Nenhum card em "${activeCategory}".`;
       textBack.textContent = "—";
       cardEl.classList.remove("flipped");
       flipped = false;
-      // Limpa os selos caso o deck esteja vazio
-      badgeFront.className = "card-badge";
-      badgeBack.className = "card-badge";
       return;
     }
     
@@ -775,28 +679,6 @@
     cardEl.classList.remove("flipped");
     flipped = false;
     window.speechSynthesis.cancel();
-
-    // LÓGICA DO SELO: Verifica se este card já foi avaliado na sessão
-    const cardKey = c.en + "|" + c.pt + "|" + c.cat;
-    const status = sessionStatus[cardKey];
-    
-    // Reseta as classes dos selos
-    badgeFront.className = "card-badge";
-    badgeBack.className = "card-badge";
-    badgeFront.textContent = "";
-    badgeBack.textContent = "";
-
-    if (status === "right") {
-      badgeFront.textContent = "✅";
-      badgeBack.textContent = "✅";
-      badgeFront.classList.add("show");
-      badgeBack.classList.add("show");
-    } else if (status === "wrong") {
-      badgeFront.textContent = "❌";
-      badgeBack.textContent = "❌";
-      badgeFront.classList.add("show");
-      badgeBack.classList.add("show");
-    }
   }
 
   function renderList() {
@@ -804,7 +686,7 @@
     list.innerHTML = "";
     
     if (deck.length === 0) {
-      list.innerHTML = '<div style="color:var(--text-light);font-size:0.85rem;padding:8px 0;">Nenhum card para mostrar.</div>';
+      list.innerHTML = '<div style="color:var(--text-light);font-size:0.85rem;padding:8px 0;">Nenhum card nesta categoria.</div>';
       return;
     }
 
@@ -818,12 +700,63 @@
       pair.className = "pair";
       pair.innerHTML = `<b>${escapeHtml(c.en)}</b> <span>| ${escapeHtml(c.pt)}</span>`;
       
-      const del = document.createElement("button");
-      del.textContent = "🗑";
-      del.onclick = () => {
+      // BOTÃO EDITAR
+      const editBtn = document.createElement("button");
+      editBtn.textContent = "✏️";
+      editBtn.title = "Editar";
+      editBtn.onclick = () => {
+        div.innerHTML = ""; // Limpa a linha atual
+        
+        const editEn = document.createElement("input");
+        editEn.type = "text";
+        editEn.value = c.en;
+        editEn.style.flex = "1";
+        editEn.style.marginRight = "4px";
+
+        const editPt = document.createElement("input");
+        editPt.type = "text";
+        editPt.value = c.pt;
+        editPt.style.flex = "1";
+        editPt.style.marginRight = "4px";
+
+        const saveBtn = document.createElement("button");
+        saveBtn.textContent = "💾";
+        saveBtn.title = "Salvar";
+        saveBtn.style.color = "var(--right-text)";
+        saveBtn.onclick = () => {
+          const newEn = editEn.value.trim();
+          const newPt = editPt.value.trim();
+          if (!newEn || !newPt) { toast("Preencha os dois campos"); return; }
+          
+          if(realIndex > -1) {
+            cards[realIndex].en = newEn;
+            cards[realIndex].pt = newPt;
+            saveToCloud(); 
+            buildDeck();
+            updateUI();
+            toast("Card atualizado!");
+          }
+        };
+
+        const cancelBtn = document.createElement("button");
+        cancelBtn.textContent = "✖️";
+        cancelBtn.title = "Cancelar";
+        cancelBtn.style.color = "var(--wrong-text)";
+        cancelBtn.onclick = () => { renderList(); };
+
+        div.appendChild(editEn);
+        div.appendChild(editPt);
+        div.appendChild(saveBtn);
+        div.appendChild(cancelBtn);
+      };
+      
+      // BOTÃO EXCLUIR
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "🗑";
+      delBtn.title = "Excluir";
+      delBtn.onclick = () => {
         if(realIndex > -1) {
             cards.splice(realIndex, 1);
-            mistakes = mistakes.filter(m => !(m.en === c.en && m.pt === c.pt && m.cat === c.cat));
             saveToCloud(); 
             buildDeck();
             updateUI();
@@ -832,7 +765,8 @@
       };
       
       div.appendChild(pair);
-      div.appendChild(del);
+      div.appendChild(editBtn);
+      div.appendChild(delBtn);
       list.appendChild(div);
     });
   }
@@ -875,88 +809,23 @@
     renderCard();
   }
 
-  // --- BOTÕES DE AÇÃO ---
   $("btnRight").onclick = () => {
     if (deck.length === 0) return;
     stats.right++;
-    
-    // Marca o card como "right" na sessão
-    const currentCard = deck[currentIndex];
-    const cardKey = currentCard.en + "|" + currentCard.pt + "|" + currentCard.cat;
-    sessionStatus[cardKey] = "right";
-
-    // Se estiver no modo revisão e acertar, remove o card da lista de erros e zera 1 do placar
-    if (isReviewMode) {
-      mistakes = mistakes.filter(m => !(m.en === currentCard.en && m.pt === currentCard.pt && m.cat === currentCard.cat));
-      
-      if (stats.wrong > 0) {
-          stats.wrong--;
-      }
-
-      if (mistakes.length === 0) {
-        isReviewMode = false;
-        toast("Você limpou todos os erros! 🎉");
-      }
-    }
-    
     saveToCloud();
-    buildDeck(); 
     nextCard();
     updateStats();
-    updateUI(); 
   };
-  
   $("btnWrong").onclick = () => {
     if (deck.length === 0) return;
     stats.wrong++;
-    
-    // Marca o card como "wrong" na sessão
-    const currentCard = deck[currentIndex];
-    const cardKey = currentCard.en + "|" + currentCard.pt + "|" + currentCard.cat;
-    sessionStatus[cardKey] = "wrong";
-
-    const alreadyMistake = mistakes.find(m => m.en === currentCard.en && m.pt === currentCard.pt);
-    if (!alreadyMistake) {
-      mistakes.push(currentCard);
-    }
-    
     saveToCloud();
     nextCard();
     updateStats();
-    updateUI(); // Adicionado updateUI para refletir o selo
   };
-
   $("btnPrev").onclick = () => { if (deck.length > 0) prevCard(); };
   $("btnNext").onclick = () => { if (deck.length > 0) nextCard(); };
 
-  $("btnReviewMode").onclick = () => {
-    isReviewMode = !isReviewMode;
-    currentIndex = 0;
-    if (isReviewMode) {
-      if (mistakes.length === 0) {
-        toast("Você ainda não errou nenhum card!");
-        isReviewMode = false;
-        return;
-      }
-      toast("Modo Revisão Ativado 🎯");
-    } else {
-      toast("Modo Normal Restaurado");
-    }
-    buildDeck();
-    updateUI();
-  };
-
-  $("btnClearStats").onclick = () => {
-    if (confirm("Tem certeza que deseja zerar o placar de acertos e erros?")) {
-      stats.right = 0;
-      stats.wrong = 0;
-      saveToCloud();
-      updateStats();
-      toast("Placar zerado!");
-    }
-  };
-
-  // --- CONTROLE GERAL ---
   $("catHeader").onclick = () => {
     const content = $("catContent");
     const arrow = $("catArrow");
@@ -970,12 +839,8 @@
     if (categories.includes(newCat)) { toast("Categoria já existe"); return; }
     categories.push(newCat);
     activeCategory = newCat; 
-    isReviewMode = false;
-    mistakes = [];
-    sessionStatus = {};
     saveToCloud();
     $("inputNewCat").value = "";
-    buildDeck();
     updateUI(); 
     toast(`Categoria "${newCat}" criada e ativada`);
   };
@@ -1028,7 +893,61 @@
     });
   });
 
-  // --- EXPORTAR / IMPORTAR ---
+  $("btnTranslate").onclick = async () => {
+    const inputEN = $("inputEN");
+    const inputPT = $("inputPT");
+    const en = inputEN.value.trim();
+    const pt = inputPT.value.trim();
+
+    if ((!en && !pt) || (en && pt)) {
+      toast("Preencha apenas um dos campos para traduzir.");
+      return;
+    }
+
+    const btn = $("btnTranslate");
+    const originalText = btn.textContent;
+    btn.textContent = "⏳ Traduzindo...";
+    btn.disabled = true;
+
+    try {
+      let textToTranslate = "";
+      let langpair = "";
+
+      if (pt) {
+        textToTranslate = encodeURIComponent(pt);
+        langpair = "pt|en"; 
+      } else {
+        textToTranslate = encodeURIComponent(en);
+        langpair = "en|pt"; 
+      }
+
+      const response = await fetch(`https://api.mymemory.translated.net/get?q=${textToTranslate}&langpair=${langpair}`);
+      const data = await response.json();
+
+      if (data.responseStatus === 200 && data.responseData.translatedText) {
+        let translated = data.responseData.translatedText;
+        if (translated === translated.toUpperCase()) {
+           translated = translated.charAt(0).toUpperCase() + translated.slice(1).toLowerCase();
+        }
+
+        if (langpair === "pt|en") {
+          inputEN.value = translated;
+        } else {
+          inputPT.value = translated;
+        }
+        toast("Traduzido com sucesso!");
+      } else {
+        toast("Não foi possível traduzir. Tente novamente.");
+      }
+    } catch (error) {
+      console.error("Erro na tradução:", error);
+      toast("Erro de conexão ao traduzir.");
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }
+  };
+
   function download(filename, content, mime) {
     const blob = new Blob([content], { type: mime || "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -1127,7 +1046,6 @@
     e.target.value = "";
   });
 
-  // --- CARREGAR TEMA E INICIAR ---
   const savedTheme = localStorage.getItem(THEME_KEY);
   if (savedTheme) {
     document.documentElement.setAttribute('data-theme', savedTheme);
