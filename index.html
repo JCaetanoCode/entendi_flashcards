@@ -212,7 +212,7 @@
     font-size: 0.85rem;
   }
 
-  .card-area { perspective: 1200px; height: 260px; margin-bottom: 16px; }
+  .card-area { perspective: 1200px; height: 260px; margin-bottom: 12px; }
   .card {
     position: relative;
     width: 100%;
@@ -314,7 +314,6 @@
   }
   .add-form input:focus { border-color: var(--text-muted); }
   
-  /* NOVO BOTÃO TRADUZIR */
   #btnTranslate {
     padding: 8px;
     border: none;
@@ -372,7 +371,6 @@
   .list-item .pair b { color: var(--text-main); }
   .list-item .pair span { color: var(--text-muted); }
   
-  /* BOTÕES DE EDITAR E EXCLUIR */
   .list-item button {
     background: transparent;
     border: none;
@@ -460,6 +458,9 @@
       </div>
     </div>
   </div>
+
+  <!-- CONTADOR -->
+  <div style="text-align: center; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px; font-weight: 600;" id="deckCounter"></div>
 
   <div class="actions">
     <button class="btn-wrong" id="btnWrong">❌ Errei</button>
@@ -655,6 +656,16 @@
     $("statWrong").textContent = stats.wrong;
     $("statTotal").textContent = cards.length;
     $("listCount").textContent = deck.length;
+    
+    // Atualiza o contador embaixo do card
+    const counterEl = $("deckCounter");
+    if (counterEl) {
+      if (deck.length > 0) {
+        counterEl.textContent = `Card ${currentIndex + 1} de ${deck.length} nesta categoria`;
+      } else {
+        counterEl.textContent = `Nenhum card nesta categoria`;
+      }
+    }
   }
 
   function renderCard() {
@@ -679,6 +690,9 @@
     cardEl.classList.remove("flipped");
     flipped = false;
     window.speechSynthesis.cancel();
+    
+    // Garante que o contador atualiza ao mudar de card
+    updateStats();
   }
 
   function renderList() {
@@ -700,12 +714,11 @@
       pair.className = "pair";
       pair.innerHTML = `<b>${escapeHtml(c.en)}</b> <span>| ${escapeHtml(c.pt)}</span>`;
       
-      // BOTÃO EDITAR
       const editBtn = document.createElement("button");
       editBtn.textContent = "✏️";
       editBtn.title = "Editar";
       editBtn.onclick = () => {
-        div.innerHTML = ""; // Limpa a linha atual
+        div.innerHTML = ""; 
         
         const editEn = document.createElement("input");
         editEn.type = "text";
@@ -750,7 +763,6 @@
         div.appendChild(cancelBtn);
       };
       
-      // BOTÃO EXCLUIR
       const delBtn = document.createElement("button");
       delBtn.textContent = "🗑";
       delBtn.title = "Excluir";
