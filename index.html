@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcards PT ⇄ EN - Nuvem</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Flashcards <span class="subtitle">(Nuvem)</span></h1>
+    <div class="header-controls">
+      <div class="direction-toggle">
+        <button id="dirPTEN" class="active">PT → EN</button>
+        <button id="dirENPT">EN → PT</button>
+      </div>
+      <button class="theme-btn" id="themeBtn" title="Alternar Tema">🌙</button>
+    </div>
+  </header>
+
+  <div class="stats">
+    <span>✅ <b id="statRight">0</b></span>
+    <span>❌ <b id="statWrong">0</b></span>
+    <span>📚 <b id="statTotal">0</b> cards</span>
+  </div>
+
+  <div class="cat-accordion" id="catAccordion">
+    <div class="cat-header" id="catHeader">
+      <span>📂 Categoria Ativa: <span class="cat-current" id="catCurrent">Geral</span></span>
+      <span id="catArrow" style="font-size: 0.8rem;">▼</span>
+    </div>
+    <div class="cat-content" id="catContent">
+      <div class="cat-list" id="catList"></div>
+      <div class="add-cat-form">
+        <input type="text" id="inputNewCat" placeholder="Nova categoria...">
+        <button id="btnAddCat">Criar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-area">
+    <div class="card" id="card">
+      <div class="card-face front">
+        <div class="card-lang" id="langFront">Português</div>
+        <div class="card-text" id="textFront">Carregando nuvem...</div>
+      </div>
+      <div class="card-face back">
+        <div class="card-lang" id="langBack">Inglês</div>
+        <div class="card-text" id="textBack">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTADOR -->
+  <div id="deckCounter"></div>
+
+  <div class="actions">
+    <button class="btn-wrong" id="btnWrong">❌ Errei</button>
+    <button class="btn-right" id="btnRight">✅ Acertei</button>
+  </div>
+
+  <div class="nav-actions">
+    <button id="btnPrev">⬅ Recuar</button>
+    <button id="btnNext">Avançar ➡</button>
+  </div>
+
+  <div class="panel">
+    <h2>➕ Adicionar card <span class="badge" id="badgeAdd">em: Geral</span></h2>
+    <div class="add-form">
+      <input type="text" id="inputEN" placeholder="Inglês (ex: Good morning)">
+      <input type="text" id="inputPT" placeholder="Português (ex: Bom dia)">
+      <button id="btnTranslate">🔄 Traduzir</button>
+      <button id="btnAdd">Adicionar</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>📁 Importar / Exportar <span class="badge" id="badgeImport">Importa para: Geral</span></h2>
+    <div class="io-row">
+      <button id="btnExportTxt">⬇ Exportar TXT</button>
+      <label>⬆ Importar TXT<input type="file" id="fileTxt" accept=".txt"></label>
+      <button id="btnExportJson">⬇ Exportar JSON</button>
+      <label>⬆ Importar JSON<input type="file" id="fileJson" accept=".json"></label>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>📋 Meus cards (<span id="listCount">0</span>)</h2>
+    <div class="card-list" id="cardList"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
